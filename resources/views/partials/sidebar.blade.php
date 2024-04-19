@@ -74,10 +74,10 @@
             </li>
 
             <li class="nav-item ">
-                <a class="nav-link {{ set_active('user') }}" href="{{ route('logout') }}">
+                <a class="nav-link {{ set_active('logout') }}" href="{{ route('logout') }}">
                     <img src="/icon/menuicon/sign-out.png" class="navbar-brand-img h-50 2em text-center me-2"
                         style="max-height: 30px; max-width: 25px" alt="main_logo">
-                    <span class="nav-link-text ms-1">User</span>
+                    <span class="nav-link-text ms-1">Logout</span>
                 </a>
             </li>
 

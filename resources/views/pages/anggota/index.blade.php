@@ -118,18 +118,22 @@
                                     'data-id="' + data.id +
                                     '">Pinjaman</a>';
 
-                                if (data.has_simpanan && data.has_pinjaman) {
+                                if (data.has_simpanan) {
                                     simpananLink = '<a href="{{ route('simpanan.show', '') }}/' +
                                         data.id_anggota +
                                         '" style="font-size: 10pt" class="btn btn-primary m-1 edit-btn" ' +
                                         'data-id="' + data.id +
                                         '">Simpanan</a>';
 
+                                }
+
+                                if (data.has_pinjaman) {
                                     pinjamanLink = '<a href="{{ route('pinjaman.show', '') }}/' +
                                         data.id_anggota +
                                         '" style="font-size: 10pt" class="btn btn-info m-1 delete-btn" ' +
                                         'data-id="' + data.id +
                                         '">Pinjaman</a>';
+
                                 }
 
                                 return '<div class="row justify-content-center">' +

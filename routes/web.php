@@ -67,9 +67,40 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::group(['middleware' => 'pegawai'], function () {
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('pegawai.dashboard');
+
+        Route::get('pegawai', [PegawaiController::class, 'index'])->name('pegawai.pegawai');
+        Route::get('pegawai/add', [PegawaiController::class, 'create'])->name('pegawai.pegawai.create');
+        Route::post('pegawai/add', [PegawaiController::class, 'store'])->name('pegawai.pegawai.store');
+        Route::get('pegawai/edit/{id}', [PegawaiController::class, 'edit'])->name('pegawai.pegawai.edit');
+        Route::put('pegawai/edit/{id}', [PegawaiController::class, 'update'])->name('pegawai.pegawai.update');
+        Route::get('pegawai/{id}', [PegawaiController::class, 'destroy'])->name('pegawai.pegawai.destroy');
+
+        Route::get('anggota', [AnggotaController::class, 'index'])->name('pegawai.anggota');
+        Route::get('anggota/add', [AnggotaController::class, 'create'])->name('pegawai.anggota.create');
+        Route::post('anggota/add', [AnggotaController::class, 'store'])->name('pegawai.anggota.store');
+        Route::get('anggota/edit/{id}', [AnggotaController::class, 'edit'])->name('pegawai.anggota.edit');
+        Route::put('anggota/edit/{id}', [AnggotaController::class, 'update'])->name('pegawai.anggota.update');
+        Route::get('anggota/{id}', [AnggotaController::class, 'destroy'])->name('pegawai.anggota.destroy');
+
+        Route::get('simpanan', [SimpananController::class, 'index'])->name('pegawai.simpanan');
+        Route::get('simpanan/add', [SimpananController::class, 'create'])->name('pegawai.simpanan.create');
+        Route::post('simpanan/add', [SimpananController::class, 'store'])->name('spegawai.impanan.store');
+        Route::get('simpanan/view/{id}', [SimpananController::class, 'show'])->name('pegawai.simpanan.show');
+        Route::get('simpanan/edit/{id}', [SimpananController::class, 'edit'])->name('pegawai.simpanan.edit');
+        Route::put('simpanan/edit/{id}', [SimpananController::class, 'update'])->name('pegawai.simpanan.update');
+        Route::get('simpanan/{id}', [SimpananController::class, 'destroy'])->name('pegawai.simpanan.destroy');
+
+        Route::get('pinjaman', [PinjamanController::class, 'index'])->name('pegawai.pinjaman');
+        Route::get('pinjaman/add', [PinjamanController::class, 'create'])->name('pegawai.pinjaman.create');
+        Route::post('pinjaman/add', [PinjamanController::class, 'store'])->name('pegawai.pinjaman.store');
+        Route::get('pinjaman/view/{id}', [PinjamanController::class, 'show'])->name('pegawai.pinjaman.show');
+        Route::get('pinjaman/edit/{id}', [PinjamanController::class, 'edit'])->name('pegawai.pinjaman.edit');
+        Route::put('pinjaman/edit/{id}', [PinjamanController::class, 'update'])->name('pegawai.pinjaman.update');
+        Route::get('pinjaman/{id}', [PinjamanController::class, 'destroy'])->name('pegawai.pinjaman.destroy');
+
+        Route::get('laporan', [LaporanController::class, 'index'])->name('pegawai.laporan');
     });
-    // Route::get('/pagesimpanan', [SimpananController::class, 'page'])->name('simpanantabel');
-    // Route::get('/simpanan', [SimpananController::class, 'index'])->name('simpanantabel');
 });
 
 

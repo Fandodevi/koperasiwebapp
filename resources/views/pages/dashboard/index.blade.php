@@ -32,8 +32,8 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <div class="d-flex flex-column align-items-center gap-1">
-                                            <h2 class="mb-2">8,258</h2>
+                                        <div class="d-flex flex-column align-items-start gap-1">
+                                            <h2 class="mb-2">{{ $jumlahPegawai }}</h2>
                                             <span>Total Pegawai</span>
                                         </div>
                                         <div id="orderStatisticsChart"></div>
@@ -57,11 +57,10 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <div class="d-flex flex-column align-items-center gap-1">
-                                            <h2 class="mb-2">8,258</h2>
+                                        <div class="d-flex flex-column align-items-start gap-1">
+                                            <h2 class="mb-2">{{ $jumlahAnggota }}</h2>
                                             <span>Total Anggota</span>
                                         </div>
-                                        <div id="orderStatisticsChart"></div>
                                     </div>
                                 </div>
                             </div>
@@ -82,8 +81,8 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <div class="d-flex flex-column align-items-center gap-1">
-                                            <h2 class="mb-2">8,258</h2>
+                                        <div class="d-flex flex-column align-items-start gap-1">
+                                            <h2 class="mb-2">{{ $jumlahSimpanan }}</h2>
                                             <span>Total Simpanan</span>
                                         </div>
                                         <div id="orderStatisticsChart"></div>
@@ -107,8 +106,8 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <div class="d-flex flex-column align-items-center gap-1">
-                                            <h2 class="mb-2">8,258</h2>
+                                        <div class="d-flex flex-column align-items-start gap-1">
+                                            <h2 class="mb-2">{{ $jumlahSimpanan }}</h2>
                                             <span>Total Pinjaman</span>
                                         </div>
                                         <div id="orderStatisticsChart"></div>

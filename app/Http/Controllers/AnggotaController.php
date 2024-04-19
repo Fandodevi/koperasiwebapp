@@ -13,7 +13,7 @@ class AnggotaController extends Controller
 
     public function index(Request $request)
     {
-        $users = anggota::with('simpanan', 'pinjaman')->get();
+        $users = Anggota::with('simpanan', 'pinjaman')->get();
 
         if ($request->ajax()) {
             return DataTables::of($users)
@@ -21,10 +21,10 @@ class AnggotaController extends Controller
                     return $user->id_anggota;
                 })
                 ->addColumn('has_simpanan', function ($user) {
-                    return $user->simpanan->count() > 0;
+                    return !empty($user->simpanan);
                 })
                 ->addColumn('has_pinjaman', function ($user) {
-                    return $user->pinjaman->count() > 0;
+                    return !empty($user->pinjaman) && count($user->pinjaman) > 0;
                 })
                 ->toJson();
         }
@@ -43,7 +43,7 @@ class AnggotaController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nik' => 'required|digits:16',
+            'nik' => 'required|digits:16|unique:users',
             'nama' => 'required',
             'jeniskelamin' => 'required|in:Laki-Laki,Perempuan',
             'alamat' => 'required',
