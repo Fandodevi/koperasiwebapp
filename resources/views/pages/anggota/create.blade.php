@@ -14,7 +14,7 @@
     <main class="container">
         <form action="{{ route('anggota.create') }}" method='POST' enctype="multipart/form-data">
             @csrf
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <div class="row my-3 p-3 bg-body rounded shadow-sm">
                 {!! session('msg') !!}
                 @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -27,35 +27,29 @@
                         </button>
                     </div>
                 @endif
-                <div class="mb-3 row">
-                    <label for="nik" class="col-sm-2 col-form-label">NIK</label>
-                    <div class="col-sm-12">
-                        <input type="text" class="form-control" id="nik" name='nik' value="{{ old('nik') }}"
-                            placeholder="Masukkan NIK" required>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label for="nik" class="col-md-6 col-form-label">NIK</label>
+                    <input type="text" class="form-control" id="nik" name='nik' value="{{ old('nik') }}"
+                        placeholder="Masukkan NIK" required>
                 </div>
 
-                <div class="mb-3 row">
-                    <label for="nama" class="col-sm-2 col-form-label">Nama Langkap</label>
-                    <div class="col-sm-12">
-                        <input type="text" class="form-control" name='nama' id="nama" value="{{ old('nama') }}"
-                            placeholder="Masukkan Nama Lengkap" required>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label for="nama" class="col-md-6 col-form-label">Nama Langkap</label>
+                    <input type="text" class="form-control" name='nama' id="nama" value="{{ old('nama') }}"
+                        placeholder="Masukkan Nama Lengkap" required>
                 </div>
 
-                <div class="mb-3 row">
-                    <label for="jeniskelamin" class="col-sm-2 col-form-label">Jenis Kelamin</label>
-                    <div class="col-sm-12">
-                        <select class="form-select cursor-pointer" aria-label="Default select example" id="jeniskelamin"
-                            name="jeniskelamin" value="{{ old('jeniskelamin') }}" required>
-                            <option value="" selected disabled>Pilih Jenis Kelamin</option>
-                            <option value="Laki-Laki">Laki-laki</option>
-                            <option value="Perempuan">Perempuan</option>
-                        </select>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label for="jeniskelamin" class="col-md-6 col-form-label">Jenis Kelamin</label>
+                    <select class="form-select cursor-pointer" aria-label="Default select example" id="jeniskelamin"
+                        name="jeniskelamin" value="{{ old('jeniskelamin') }}" required>
+                        <option value="" selected disabled>Pilih Jenis Kelamin</option>
+                        <option value="Laki-Laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                    </select>
                 </div>
 
-                <div class="mb-3 row">
+                <div class="col-md-6 mb-3">
                     <label for="alamat" class="col-sm-2 col-form-label">Alamat</label>
                     <div class="col-sm-12">
                         <input type="text" class="form-control" name='alamat' id="alamat" value="{{ old('alamat') }}"
@@ -63,31 +57,35 @@
                     </div>
                 </div>
 
-                <div class="mb-3 row">
-                    <label for="no_telp" class="col-sm-2 col-form-label">No Telepon</label>
-                    <div class="col-sm-12">
-                        <input type="text" class="form-control" name='noTelp' id="no_telp"
-                            value="{{ old('no_telp') }}" placeholder="Masukkan No Handphone" required>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label for="no_telp" class="col-md-6 col-form-label">No Telepon</label>
+                    <input type="text" class="form-control" name='noTelp' id="no_telp" value="{{ old('no_telp') }}"
+                        placeholder="Masukkan No Handphone" required>
                 </div>
 
-                <div class="mb-3 row">
-                    <label for="pekerjaan" class="col-sm-2 col-form-label">Pekerjaan</label>
-                    <div class="col-sm-12">
-                        <input type="text" class="form-control" name='pekerjaan' id="pekerjaan"
-                            value="{{ old('pekerjaan') }}" placeholder="Masukkan Pekerjaan" required>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label for="pekerjaan" class="col-md-6 col-form-label">Pekerjaan</label>
+                    <input type="text" class="form-control" name='pekerjaan' id="pekerjaan"
+                        value="{{ old('pekerjaan') }}" placeholder="Masukkan Pekerjaan" required>
                 </div>
 
-                <div class="mb-3 row">
-                    <label for="tanggal_masuk" class="col-sm-2 col-form-label">Tanggal Masuk</label>
-                    <div class="col-sm-12">
-                        <input type="date" class="form-control" name='tanggalmasuk' id="tanggal_masuk"
-                            value="{{ old('tanggalmasuk') }}" required>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label for="tanggal_masuk" class="col-md-6 col-form-label">Tanggal Masuk</label>
+                    <input type="date" class="form-control" name='tanggalmasuk' id="tanggal_masuk"
+                        value="{{ old('tanggalmasuk') }}" required>
                 </div>
 
-                <div class="mb-3 row mt-5">
+                <div class="col-md-6 mb-3">
+                    <label for="jenisanggota" class="col-md-6 col-form-label">Jenis Anggota</label>
+                    <select class="form-select cursor-pointer" aria-label="Default select example" id="jenisanggota"
+                        name="jenisanggota" value="{{ old('jenisanggota') }}" required>
+                        <option value="" selected disabled>Pilih Jenis Anggota</option>
+                        <option value="Pendiri">Pendiri</option>
+                        <option value="Biasa">Biasa</option>
+                    </select>
+                </div>
+
+                <div class="mb-3 mt-4">
                     <div class="col-sm-12 d-flex justify-content-between">
                         <a href="{{ route('anggota') }}" class="btn btn-secondary">Kembali</a>
                         <button type="submit" class="btn btn-primary">SIMPAN</button>
@@ -95,7 +93,6 @@
                 </div>
             </div>
         </form>
-        </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"

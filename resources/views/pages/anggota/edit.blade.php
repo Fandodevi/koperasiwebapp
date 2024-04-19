@@ -15,7 +15,7 @@
         <form action="{{ route('anggota.update', $users->id_anggota) }}" method='POST' enctype="multipart/form-data">
             @csrf
             @method('PUT')
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <div class="row my-3 p-3 bg-body rounded shadow-sm">
                 {!! session('msg') !!}
                 @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -28,66 +28,69 @@
                         </button>
                     </div>
                 @endif
-                <div class="mb-3 row">
+                <div class="col-md-6 mb-3">
                     <label for="nik" class="col-sm-2 col-form-label">NIK</label>
-                    <div class="col-sm-12">
-                        <input type="text" class="form-control" id="nik" name='nik' value="{{ $users->nik }}"
-                            placeholder="Masukkan NIK" required>
-                    </div>
+                    <input type="text" class="form-control" id="nik" name='nik' value="{{ $users->nik }}"
+                        placeholder="Masukkan NIK" required>
                 </div>
 
-                <div class="mb-3 row">
-                    <label for="nama" class="col-sm-2 col-form-label">Nama Lengkap</label>
-                    <div class="col-sm-12">
-                        <input type="text" class="form-control" id="nama" name='nama' value="{{ $users->nama }}"
-                            placeholder="Masukkan Nama Lengkap" required>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label for="nama" class="col-md-6 col-form-label">Nama Lengkap</label>
+                    <input type="text" class="form-control" id="nama" name='nama' value="{{ $users->nama }}"
+                        placeholder="Masukkan Nama Lengkap" required>
                 </div>
 
-                <div class="mb-3 row">
-                    <label for="jeniskelamin" class="col-sm-2 col-form-label">Jenis Kelamin</label>
-                    <div class="col-sm-12">
-                        <select class="form-select cursor-pointer" aria-label="Default select example" id="jeniskelamin"
-                            name="jeniskelamin" required>
-                            @if ($users->jenis_kelamin == 'Laki-Laki')
-                                <option value="" disabled>Pilih Jenis Kelamin</option>
-                                <option value="{{ $users->jenis_kelamin }}" selected>{{ $users->jenis_kelamin }}</option>
-                                <option value="Perempuan">Perempuan</option>
-                            @elseif ($users->jenis_kelamin == 'Perempuan')
-                                <option value="" disabled>Pilih Jenis Kelamin</option>
-                                <option value="{{ $users->jenis_kelamin }}" selected>{{ $users->jenis_kelamin }}</option>
-                                <option value="Laki-Laki">Laki-Laki</option>
-                            @else
-                                <option value="" selected disabled>Pilih Jenis Kelamin</option>
-                                <option value="Laki-Laki">Laki-Laki</option>
-                                <option value="Perempuan">Perempuan</option>
-                            @endif
-                        </select>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label for="jeniskelamin" class="col-md-6 col-form-label">Jenis Kelamin</label>
+                    <select class="form-select cursor-pointer" aria-label="Default select example" id="jeniskelamin"
+                        name="jeniskelamin" required>
+                        @if ($users->jenis_kelamin == 'Laki-Laki')
+                            <option value="" disabled>Pilih Jenis Kelamin</option>
+                            <option value="{{ $users->jenis_kelamin }}" selected>{{ $users->jenis_kelamin }}</option>
+                            <option value="Perempuan">Perempuan</option>
+                        @elseif ($users->jenis_kelamin == 'Perempuan')
+                            <option value="" disabled>Pilih Jenis Kelamin</option>
+                            <option value="{{ $users->jenis_kelamin }}" selected>{{ $users->jenis_kelamin }}</option>
+                            <option value="Laki-Laki">Laki-Laki</option>
+                        @else
+                            <option value="" selected disabled>Pilih Jenis Kelamin</option>
+                            <option value="Laki-Laki">Laki-Laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        @endif
+                    </select>
                 </div>
 
-                <div class="mb-3 row">
-                    <label for="alamat" class="col-sm-2 col-form-label">Alamat</label>
-                    <div class="col-sm-12">
-                        <input type="text" class="form-control" name='alamat' value="{{ $users->alamat }}"
-                            placeholder="Masukkan Alamat" required>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label for="alamat" class="col-md-6 col-form-label">Alamat</label>
+                    <input type="text" class="form-control" name='alamat' value="{{ $users->alamat }}"
+                        placeholder="Masukkan Alamat" required>
                 </div>
 
-                <div class="mb-3 row">
-                    <label for="noTelp" class="col-sm-2 col-form-label">No Handphone</label>
-                    <div class="col-sm-12">
-                        <input type="text" class="form-control" id="noTelp" name='noTelp'
-                            value="{{ $users->no_telp }}" placeholder="Masukkan No Handphone" required>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label for="noTelp" class="col-md-6 col-form-label">No Handphone</label>
+                    <input type="text" class="form-control" id="noTelp" name='noTelp' value="{{ $users->no_telp }}"
+                        placeholder="Masukkan No Handphone" required>
                 </div>
 
-                <div class="mb-3 row">
-                    <label for="pekerjaan" class="col-sm-2 col-form-label">Pekerjaan</label>
-                    <div class="col-sm-12">
-                        <input type="text" class="form-control" name='pekerjaan' id="pekerjaan"
-                            value="{{ $users->pekerjaan }}" placeholder="Masukkan Pekerjaan" required>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label for="pekerjaan" class="col-md-6 col-form-label">Pekerjaan</label>
+                    <input type="text" class="form-control" name='pekerjaan' id="pekerjaan"
+                        value="{{ $users->pekerjaan }}" placeholder="Masukkan Pekerjaan" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="tanggal_masuk" class="col-md-6 col-form-label">Tanggal Masuk</label>
+                    <input type="date" class="form-control" name='tanggalmasuk' id="tanggal_masuk"
+                        value="{{ $users->tanggal_masuk }}" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="jenisanggota" class="col-md-6 col-form-label">Jenis Anggota</label>
+                    <select class="form-select cursor-pointer" aria-label="Default select example" id="jenisanggota"
+                        name="jenisanggota" required>
+                        <option value="" disabled>Pilih Jenis Anggota</option>
+                        <option value="{{ $users->jenis_anggota }}" selected>{{ $users->jenis_anggota }}</option>
+                    </select>
                 </div>
 
                 <div class="mb-3 row mt-5">

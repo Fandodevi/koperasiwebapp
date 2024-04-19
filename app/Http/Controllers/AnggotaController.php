@@ -50,6 +50,7 @@ class AnggotaController extends Controller
             'noTelp' => 'required|numeric',
             'pekerjaan' => 'required',
             'tanggalmasuk' => 'required',
+            'jenisanggota' => 'required|in:Pendiri,Biasa',
         ]);
 
         if ($validator->fails()) {
@@ -67,6 +68,7 @@ class AnggotaController extends Controller
         $anggota->no_telp = $request->noTelp;
         $anggota->pekerjaan = $request->pekerjaan;
         $anggota->tanggal_masuk = $request->tanggalmasuk;
+        $anggota->jenis_anggota = $request->jenisanggota;
         $anggota->save();
 
         return redirect()->route('anggota')->with('success', 'Data anggota berhasil disimpan.');
@@ -89,7 +91,7 @@ class AnggotaController extends Controller
         $anggota = anggota::find($id);
 
         if (!$anggota) {
-            return back()->withErrors(['error' => 'Pegawai tidak ditemukan. Silahkan coba kembali']);
+            return back()->withErrors(['error' => 'Anggota tidak ditemukan. Silahkan coba kembali']);
         }
 
         $validator = Validator::make($request->all(), [
@@ -99,6 +101,7 @@ class AnggotaController extends Controller
             'alamat' => 'required',
             'noTelp' => 'required|numeric',
             'pekerjaan' => 'required',
+            'tanggalmasuk' => 'required',
         ]);
 
 
@@ -114,9 +117,10 @@ class AnggotaController extends Controller
         $anggota->alamat = $request->alamat;
         $anggota->no_telp = $request->noTelp;
         $anggota->pekerjaan = $request->pekerjaan;
+        $anggota->tanggal_masuk = $request->tanggalmasuk;
 
         if ($anggota->save()) {
-            return redirect()->route('anggota')->with('success', 'Data Pegawai berhasil diperbarui.');
+            return redirect()->route('anggota')->with('success', 'Data Anggota berhasil diperbarui.');
         } else {
             return back()->withErrors(['error' => 'Gagal menyimpan data. Silahkan coba kembali.']);
         }
