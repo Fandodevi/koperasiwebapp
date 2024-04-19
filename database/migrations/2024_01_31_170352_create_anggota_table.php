@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('no_telp')->nullable();
             $table->string('pekerjaan')->nullable();
             $table->string('tanggal_masuk')->nullable();
-            $table->string('saldo_akhir')->nullable();
+            $table->enum('jenis_anggota', ['Pendiri', 'Biasa'])->nullable();
             $table->timestamps();
         });
     }
