@@ -15,18 +15,6 @@
     <body class="bg-light">
         <main class="container">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
-                {!! session('msg') !!}
-                @if ($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <span class="text-sm">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </span>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                        </button>
-                    </div>
-                @endif
                 <div class="pb-2">
                     <a href='{{ route('simpanan.create') }}' class="btn btn-primary">+ Tambah Data</a>
                 </div>
@@ -36,6 +24,7 @@
                             <tr style="background-color: rgb(187, 246, 201)">
                                 <th class="text-center">No</th>
                                 <th class="text-center">No. Anggota</th>
+                                <th class="text-center">Jenis Anggota</th>
                                 <th class="text-center">Nama</th>
                                 <th class="text-center">Alamat</th>
                                 <th class="text-center">Saldo</th>
@@ -59,12 +48,12 @@
                 });
             </script>
         @endif
-        @if (session('error'))
+        @if ($errors->any())
             <script>
                 Swal.fire({
                     icon: 'error',
-                    title: 'Gagal',
-                    text: '{{ session('error') }}'
+                    title: 'Oopss...',
+                    text: '{{ $errors->first() }}'
                 });
             </script>
         @endif
@@ -84,6 +73,10 @@
                         {
                             data: 'no_anggota',
                             name: 'no_anggota'
+                        },
+                        {
+                            data: 'jenis_anggota',
+                            name: 'jenis_anggota'
                         },
                         {
                             data: 'nama',
@@ -130,12 +123,13 @@
                                     data.id_simpanan + '" required >' +
                                     '<input type="hidden" class="form-control" id="id_anggota" name="id_anggota" value="' +
                                     data.id_anggota + '" required >' +
+                                    '<input type="hidden" class="form-control" id="jenis_anggota" name="jenis_anggota" value="' +
+                                    data.jenis_anggota + '" required >' +
                                     '<div class="mb-3 row">' +
                                     '<label for="jenis_simpanan" class="col-sm-2 col-form-label">Jenis Simpanan</label>' +
                                     '<div class="col-sm-12">' +
                                     '<select class="form-select cursor-pointer" aria-label="Default select example" id="jenis_simpanan" name="jenis_simpanan" >' +
                                     '<option value="" selected disabled>Pilih Jenis Simpanan</option>' +
-                                    '<option value="Simpanan Pokok">Simpanan Pokok</option>' +
                                     '<option value="Simpanan Wajib">Simpanan Wajib</option>' +
                                     '<option value="Simpanan Sukarela">Simpanan Sukarela</option>' +
                                     '</select>' +
@@ -156,8 +150,6 @@
                                     '</div>' +
                                     '</div>' +
                                     '</form>' +
-                                    '</div>' +
-                                    '<div class="col-auto">' +
                                     '<form action="{{ route('simpanan.update', '') }}/' + data
                                     .id_simpanan +
                                     '" method="POST" enctype="multipart/form-data">' +
@@ -215,12 +207,10 @@
                                     '<div class="col-auto">' +
                                     '<a href="{{ route('simpanan.show', '') }}/' + data.id_simpanan +
                                     '" style="font-size: 10pt" class="btn btn-secondary m-1 edit-btn" ' +
-                                    'data-id="' + data.id +
+                                    'data-id="' + data.id_simpanan +
                                     '">Lihat</a>' +
-                                    '<a href="" style="font-size: 10pt" class="btn btn-warning m-1 edit-btn" ' +
-                                    'data-id="' + data.id +
-                                    '">Edit</a>' +
-                                    '<a href="" style="font-size: 10pt" class="btn btn-danger m-1 delete-btn" ' +
+                                    '<a href="{{ route('simpanan.destroy', '') }}/' + data.id_simpanan +
+                                    '" style="font-size: 10pt" class="btn btn-danger m-1 delete-btn" ' +
                                     'data-id="' + data.id +
                                     '">Hapus</a>' +
                                     '</div>' +

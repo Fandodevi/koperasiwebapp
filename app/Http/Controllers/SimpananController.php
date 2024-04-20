@@ -27,6 +27,9 @@ class SimpananController extends Controller
                 ->addColumn('no_anggota', function ($simpanan) {
                     return $simpanan->anggota->no_anggota;
                 })
+                ->addColumn('jenis_anggota', function ($simpanan) {
+                    return $simpanan->anggota->jenis_anggota;
+                })
                 ->addColumn('nama', function ($simpanan) {
                     return $simpanan->anggota->nama;
                 })
@@ -85,11 +88,21 @@ class SimpananController extends Controller
                     $detail_simpanan->subtotal_saldo = $request->nominal;
 
                     if ($request->jenis_simpanan == 'Simpanan Pokok') {
-                        $detail_simpanan->simpanan_pokok = $request->nominal;
-                    } elseif ($request->jenis_simpanan == 'Simpanan Wajib') {
-                        $detail_simpanan->simpanan_wajib = $request->nominal;
+                        if ($request->jenis_anggota == 'Pendiri') {
+                            if ($request->nominal == 500000) {
+                                $detail_simpanan->simpanan_pokok = $request->nominal;
+                            } else {
+                                throw new \Exception('Simpanan pokok anggota pendiri harus Rp. 500.000.');
+                            }
+                        } else {
+                            if ($request->nominal == 100000) {
+                                $detail_simpanan->simpanan_pokok = $request->nominal;
+                            } else {
+                                throw new \Exception('Simpanan pokok anggota biasa harus Rp. 100.000.');
+                            }
+                        }
                     } else {
-                        $detail_simpanan->simpanan_sukarela = $request->nominal;
+                        throw new \Exception('Anggota belum memiliki simpanan pokok');
                     }
 
                     if (!$detail_simpanan->save()) {
@@ -107,111 +120,18 @@ class SimpananController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $data = simpanan::find($id);
-        $detail_simpanan_sukarela = DetailSimpanan::where('id_simpanan', '=', $id)->sum('simpanan_sukarela');
-
-        if (!$data) {
-            return back()->with(['error' => 'Simpanan tidak ditemukan. Silahkan coba kembali']);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'id_anggota' => 'required|exists:anggota,id_anggota',
-            'jenis_simpanan' => 'required|in:Simpanan Pokok,Simpanan Wajib,Simpanan Sukarela',
-            'nominal' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/'
-        ]);
-
-        if ($validator->fails()) {
-            return back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        try {
-            $saldoSebelumSetoran = $data->total_saldo;
-
-            $jenisTransaksi = $request->jenis_transaksi;
-
-            $jenisSimpanan = $request->jenis_simpanan;
-
-            if ($jenisTransaksi == 'Setor') {
-                $saldoSebelumSetoran += $request->nominal;
-                $data->total_saldo += $request->nominal;
-            } elseif ($jenisTransaksi == 'Tarik') {
-                if ($jenisSimpanan == 'Simpanan Sukarela' && $request->nominal > $detail_simpanan_sukarela) {
-                    throw new \Exception('Gagal menyimpan. Saldo sukarela tidak cukup');
-                }
-                $saldoSebelumSetoran -= $request->nominal;
-                $data->total_saldo -= $request->nominal;
-            }
-
-            DB::transaction(function () use ($data, $saldoSebelumSetoran, $jenisTransaksi, $jenisSimpanan, $request) {
-                $detail_simpanan = new DetailSimpanan();
-                $detail_simpanan->id_simpanan = $data->id_simpanan;
-                $detail_simpanan->id_users = Auth::id();
-                $detail_simpanan->jenis_transaksi = $jenisTransaksi;
-                $detail_simpanan->subtotal_saldo = $saldoSebelumSetoran;
-
-                if ($jenisSimpanan == 'Simpanan Pokok') {
-                    $detail_simpanan->simpanan_pokok = $request->nominal;
-                } elseif ($jenisSimpanan == 'Simpanan Wajib') {
-                    $detail_simpanan->simpanan_wajib = $request->nominal;
-                } elseif ($jenisSimpanan == 'Simpanan Sukarela') {
-                    $detail_simpanan->simpanan_sukarela = $request->nominal;
-                }
-
-                if (!$data->save() || !$detail_simpanan->save()) {
-                    throw new \Exception('Gagal menyimpan perubahan saldo simpanan. Silahkan coba lagi');
-                }
-            });
-
-            return redirect()->route('simpanan')->with('success', 'Data simpanan berhasil disimpan.');
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
-        }
-    }
-
-
-    /**
      * Display the specified resource.
      */
     public function show(Request $request, string $id)
     {
-        $simpanan = simpanan::with('anggota')->get();
-        $detail_simpanan = DetailSimpanan::with(['simpanan', 'users'])->get();
-        $rowData = [];
-
-        if ($request->ajax()) {
-            foreach ($detail_simpanan as $row) {
-                $simpanan = $row->simpanan;
-                $anggota = $simpanan->anggota;
-
-                $rowData[] = [
-                    'DT_RowIndex' => $row->id,
-                    'id_simpanan' => $simpanan->id,
-                    'no_anggota' => $anggota->no_anggota,
-                    'nama_anggota' => $anggota->nama,
-                    'alamat' => $anggota->alamat,
-                    'tanggal_masuk' => $anggota->tanggal_masuk,
-                    'total_saldo' => $simpanan->total_saldo,
-                    'jenis_transaksi' => $row->jenis_transaksi,
-                    'simpanan_pokok' => $row->simpanan_pokok,
-                    'simpanan_wajib' => $row->simpanan_wajib,
-                    'simpanan_sukarela' => $row->simpanan_sukarela,
-                    'subtotal_saldo' => $row->subtotal_saldo,
-                    'created_at' => $row->created_at->format('d-m-Y')
-                ];
-            }
-
-            return DataTables::of($rowData)->toJson();
-        }
-        $setor = DetailSimpanan::where('jenis_transaksi', 'setor')->get();
-        $tarik = DetailSimpanan::where('jenis_transaksi', 'tarik')->get();
-        // $totalSetor = $detail_simpanan->where('jenis_transaksi', 'setor');
-        // $totalTarik = $detail_simpanan->where('jenis_transaksi', 'tarik');
+        $simpanan = simpanan::where('id_simpanan', '=', $id)->with('anggota')->first();
+        $detail_simpanan = DetailSimpanan::where('id_simpanan', $id)->with(['simpanan'])->get();
+        $setor = DetailSimpanan::where('id_simpanan', $id)
+            ->where('jenis_transaksi', '=', 'Setor')
+            ->get();
+        $tarik = DetailSimpanan::where('id_simpanan', $id)
+            ->where('jenis_transaksi', '=', 'Tarik')
+            ->get();
 
         $totalSimpananPokok = $setor->sum('simpanan_pokok');
         $totalSimpananWajib = $setor->sum('simpanan_wajib');
@@ -224,12 +144,330 @@ class SimpananController extends Controller
         $totalSimpananPokok -= $totalPenarikanPokok;
         $totalSimpananWajib -= $totalPenarikanWajib;
         $totalSimpananSukarela -= $totalPenarikanSukarela;
-        // dd($totalSimpananPokok);
+        $rowData = [];
+
+        if ($request->ajax()) {
+            foreach ($detail_simpanan as $row) {
+                $simpanan = $row->simpanan;
+                $anggota = $simpanan->anggota;
+
+                $rowData[] = [
+                    'id' => $row->id,
+                    'DT_RowIndex' => $row->id_simpanan,
+                    'id_simpanan' => $simpanan->id_simpanan,
+                    'jenis_anggota' => $anggota->jenis_anggota,
+                    'total_saldo' => $simpanan->total_saldo,
+                    'jenis_transaksi' => $row->jenis_transaksi,
+                    'simpanan_pokok' => $row->simpanan_pokok,
+                    'simpanan_wajib' => $row->simpanan_wajib,
+                    'simpanan_sukarela' => $row->simpanan_sukarela,
+                    'subtotal_saldo' => $row->subtotal_saldo,
+                    'created_at' => $row->created_at->format('d-m-Y h:i:s')
+                ];
+            }
+
+            return DataTables::of($rowData)->toJson();
+        }
+
         return view('pages.simpanan.show', [
             'simpanan' => $simpanan,
             'total_simpanan_pokok' => $totalSimpananPokok,
             'total_simpanan_wajib' => $totalSimpananWajib,
             'total_simpanan_sukarela' => $totalSimpananSukarela
         ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        return view('pages.simpanan.edit', compact($id));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        if ($request->id_anggota == 'update_detail') {
+            $validator = Validator::make($request->all(), [
+                'jenis_transaksi' => 'required|in:Setor,Tarik',
+                'nominal_simpanan_pokok' => 'numeric|regex:/^\d+(\.\d{1,2})?$/',
+                'nominal_simpanan_wajib' => 'numeric|regex:/^\d+(\.\d{1,2})?$/',
+                'nominal_simpanan_sukarela' => 'numeric|regex:/^\d+(\.\d{1,2})?$/'
+            ]);
+
+            if ($validator->fails()) {
+                return back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            $jenisAnggota = $request->jenis_anggota;
+            $jenisTransaksiLama = $request->jenis_lama;
+            $jenisTransaksi = $request->jenis_transaksi;
+            $subtotal_saldo = $request->subtotal_saldo_saat_ini;
+
+            $nominalBaruSimpananPokok = $request->nominal_simpanan_pokok;
+            $nominalBaruSimpananWajib = $request->nominal_simpanan_wajib;
+            $nominalBaruSimpananSukarela = $request->nominal_simpanan_sukarela;
+            $nominalLamaSimpananSukarela = $request->nominal_lama;
+
+            $targetRow = DetailSimpanan::where('id_simpanan', $id)->where('subtotal_saldo', $subtotal_saldo)->first();
+            $simpanan = simpanan::where('id_simpanan', $id)->first();
+
+            if ($targetRow) {
+                $dataDetailSimpanan = DetailSimpanan::where('id_simpanan', $id)->where('created_at', '>=', $targetRow->created_at)->get();
+                $simpananSukarelaSetor = DetailSimpanan::where('id_simpanan', '=', $id)
+                    ->where('jenis_transaksi', '=', 'Setor')
+                    ->sum('simpanan_sukarela');
+                $simpananSukarelaTarik = DetailSimpanan::where('id_simpanan', '=', $id)
+                    ->where('jenis_transaksi', '=', 'Tarik')
+                    ->sum('simpanan_sukarela');
+                $simpananSukarela = $simpananSukarelaSetor - $simpananSukarelaTarik;
+
+
+                foreach ($dataDetailSimpanan as $detailSimpanan) {
+                    if ($request->nominal_simpanan_sukarela != 0 && $request->nominal_simpanan_wajib != 0) {
+                        if ($jenisTransaksi == 'Setor') {
+                            if ($jenisAnggota == 'Pendiri') {
+                                if ($nominalBaruSimpananWajib == 50000) {
+                                    $selisih = abs($nominalLamaSimpananSukarela - $nominalBaruSimpananSukarela);
+                                    if ($nominalBaruSimpananSukarela > $nominalLamaSimpananSukarela) {
+                                        $detailSimpanan->subtotal_saldo += $selisih;
+                                    } else {
+                                        $detailSimpanan->subtotal_saldo -= $selisih;
+                                    }
+                                    $targetRow->simpanan_wajib = $nominalBaruSimpananWajib;
+                                    $targetRow->simpanan_sukarela = $nominalBaruSimpananSukarela;
+                                } else {
+                                    return back()->with('error', 'Simpanan wajib anggota pendiri harus Rp. 50.000.');
+                                }
+                            } else {
+                                if ($nominalBaruSimpananWajib == 20000) {
+                                    $selisih = abs($nominalLamaSimpananSukarela - $nominalBaruSimpananSukarela);
+                                    if ($nominalBaruSimpananSukarela > $nominalLamaSimpananSukarela) {
+                                        $detailSimpanan->subtotal_saldo += $selisih;
+                                    } else {
+                                        $detailSimpanan->subtotal_saldo -= $selisih;
+                                    }
+                                    $targetRow->simpanan_wajib = $nominalBaruSimpananWajib;
+                                    $targetRow->simpanan_sukarela = $nominalBaruSimpananSukarela;
+                                } else {
+                                    return back()->with('error', 'Simpanan wajib anggota biasa harus Rp. 20.000.');
+                                }
+                            }
+                        } else {
+                            if ($request->nominal_simpanan_wajib != 0) {
+                                return back()->with('error', 'Simpanan wajib tidak bisa ditarik');
+                            }
+                        }
+                    } elseif ($request->nominal_simpanan_sukarela != 0) {
+                        if ($jenisTransaksi == 'Setor') {
+                            $selisih = abs($nominalBaruSimpananSukarela - $nominalLamaSimpananSukarela);
+                            if ($nominalBaruSimpananSukarela > $nominalLamaSimpananSukarela) {
+                                $detailSimpanan->subtotal_saldo += $selisih;
+                            } else {
+                                $detailSimpanan->subtotal_saldo -= $selisih;
+                            }
+                            $targetRow->simpanan_sukarela = $nominalBaruSimpananSukarela;
+                        } else {
+                            if ($simpananSukarela > $nominalBaruSimpananSukarela) {
+                                return back()->with('error', 'Jenis Transaksi berbeda');
+                            } else {
+                                return back()->with('error', 'Saldo Simpanan sukarela tidak cukup');
+                            }
+                        }
+                    } elseif ($request->nominal_simpanan_wajib != 0) {
+                        if ($jenisTransaksi == 'Setor') {
+                            if ($jenisAnggota == 'Pendiri') {
+                                if ($nominalBaruSimpananWajib == 50000) {
+                                    $targetRow->simpanan_wajib = $nominalBaruSimpananWajib;
+                                } else {
+                                    return back()->with('error', 'Simpanan wajib anggota pendiri harus Rp. 50.000.');
+                                }
+                            } else {
+                                if ($nominalBaruSimpananWajib == 20000) {
+                                    $targetRow->simpanan_wajib = $nominalBaruSimpananWajib;
+                                } else {
+                                    return back()->with('error', 'Simpanan wajib anggota biasa harus Rp. 20.000.');
+                                }
+                            }
+                        } else {
+                            return back()->with('error', 'Simpanan wajib tidak bisa ditarik');
+                        }
+                    } else {
+                        if ($jenisTransaksi == 'Setor') {
+                            if ($jenisAnggota == 'Pendiri') {
+                                if ($nominalBaruSimpananPokok == 500000) {
+                                    $targetRow->simpanan_pokok = $nominalBaruSimpananPokok;
+                                } else {
+                                    return back()->with('error', 'Simpanan pokok anggota pendiri harus Rp. 500.000.');
+                                }
+                            } else {
+                                if ($nominalBaruSimpananPokok == 100000) {
+                                    $targetRow->simpanan_pokok = $nominalBaruSimpananPokok;
+                                } else {
+                                    return back()->with('error', 'Simpanan pokok anggota biasa harus Rp. 100.000.');
+                                }
+                            }
+                        } else {
+                            return back()->with('error', 'Simpanan pokok tidak bisa ditarik');
+                        }
+                    }
+                    $saved = $detailSimpanan->save();
+                    if (!$saved) {
+                        return back()->with('error', 'Gagal menyimpan perubahan pada DetailSimpanan.');
+                    }
+                    $dataUpdate[] = $detailSimpanan;
+                }
+                $dataUpdateRow[] = $targetRow;
+
+                $savedTargetRow = $targetRow->save();
+                if (!$savedTargetRow) {
+                    return back()->with('error', 'Gagal menyimpan perubahan pada targetRow.');
+                }
+
+                $dataSubtotal = DetailSimpanan::orderBy('created_at', 'desc')
+                    ->first();
+                $simpanan->total_saldo = $dataSubtotal->subtotal_saldo;
+                $savedTotal = $simpanan->save();
+                if (!$savedTotal) {
+                    return back()->with('error', 'Gagal menyimpan perubahan pada total saldo.');
+                }
+
+                return back()->with('success', 'Data detail simpanan berhasil diperbarui.');
+            } else {
+                return back()->with('error', 'Baris tidak ditemukan.');
+            }
+        } else {
+            $data = simpanan::find($id);
+            $detail_simpanan_sukarela = DetailSimpanan::where('id_simpanan', '=', $id)->sum('simpanan_sukarela');
+
+            if (!$data) {
+                return back()->with(['error' => 'Simpanan tidak ditemukan. Silahkan coba kembali']);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'id_anggota' => 'required|exists:anggota,id_anggota',
+                'jenis_simpanan' => 'required|in:Simpanan Pokok,Simpanan Wajib,Simpanan Sukarela',
+                'nominal' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/'
+            ]);
+
+            if ($validator->fails()) {
+                return back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            try {
+                $saldoSebelumSetoran = $data->total_saldo;
+                $jenisTransaksi = $request->jenis_transaksi;
+                $jenisSimpanan = $request->jenis_simpanan;
+                $jenisAnggota = $request->jenis_anggota;
+
+                if ($jenisTransaksi == 'Setor') {
+                    $saldoSebelumSetoran += $request->nominal;
+                    $data->total_saldo += $request->nominal;
+                } elseif ($jenisTransaksi == 'Tarik') {
+                    if ($jenisSimpanan == 'Simpanan Sukarela' && $request->nominal > $detail_simpanan_sukarela) {
+                        throw new \Exception('Transaksi gagal. Saldo sukarela tidak cukup');
+                    }
+                    $saldoSebelumSetoran -= $request->nominal;
+                    $data->total_saldo -= $request->nominal;
+                }
+
+                DB::transaction(function () use ($data, $saldoSebelumSetoran, $jenisTransaksi, $jenisSimpanan, $request) {
+                    $detail_simpanan = new DetailSimpanan();
+                    $detail_simpanan->id_simpanan = $data->id_simpanan;
+                    $detail_simpanan->id_users = Auth::id();
+                    $detail_simpanan->jenis_transaksi = $jenisTransaksi;
+                    $detail_simpanan->subtotal_saldo = $saldoSebelumSetoran;
+
+                    if ($jenisSimpanan == 'Simpanan Wajib') {
+                        if ($request->jenis_anggota == 'Pendiri') {
+                            if ($request->nominal == 50000) {
+                                $detail_simpanan->simpanan_wajib = $request->nominal;
+                            } elseif ($request->nominal > 50000) {
+                                $sisaSaldo = $request->nominal - 50000;
+                                $detail_simpanan->simpanan_wajib = 50000;
+                                $detail_simpanan->simpanan_sukarela = $sisaSaldo;
+                            } else {
+                                throw new \Exception('Simpanan wajib anggota pendiri harus Rp. 50.000.');
+                            }
+                        } else {
+                            if ($request->nominal == 20000) {
+                                $detail_simpanan->simpanan_wajib = $request->nominal;
+                            } elseif ($request->nominal > 20000) {
+                                $sisaSaldo = $request->nominal - 20000;
+                                $detail_simpanan->simpanan_wajib = 20000;
+                                $detail_simpanan->simpanan_sukarela = $sisaSaldo;
+                            } else {
+                                throw new \Exception('Simpanan wajib anggota biasa harus Rp. 20.000.');
+                            }
+                        }
+                    } else {
+                        $detail_simpanan->simpanan_sukarela = $request->nominal;
+                    }
+
+                    if (!$data->save() || !$detail_simpanan->save()) {
+                        throw new \Exception('Gagal menyimpan transaksi simpanan. Silahkan coba lagi');
+                    }
+                });
+
+                return redirect()->route('simpanan')->with('success', 'Data simpanan berhasil disimpan.');
+            } catch (\Exception $e) {
+                return back()->withErrors(['error' => $e->getMessage()]);
+            }
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $detail = simpanan::where('id_simpanan', $id)->first();
+        $detail->delete();
+        return redirect()->route('simpanan')->with('success', 'Simpanan berhasil dihapus');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroyDetail(string $id)
+    {
+        $detail = DetailSimpanan::where('id', $id)->first();
+        $subtotal = $detail->subtotal_saldo;
+
+        if ($detail) {
+            $simpanan = simpanan::where('id_simpanan', $detail->id_simpanan)->first();
+            $dataDetailSimpanan = DetailSimpanan::where('id_simpanan', $detail->id_simpanan)->where('created_at', '>=', $detail->created_at)->get();
+
+            foreach ($dataDetailSimpanan as $detailSimpanan) {
+                $detailSimpanan->subtotal_saldo -= $subtotal;
+                $saved = $detailSimpanan->save();
+                if (!$saved) {
+                    return back()->with('error', 'Gagal menyimpan perubahan pada DetailSimpanan.');
+                }
+                $dataupdate[] = $detailSimpanan;
+            }
+            $detail->delete();
+            $dataSubtotal = DetailSimpanan::orderBy('created_at', 'desc')
+                ->first();
+            if ($dataSubtotal) {
+                $simpanan->total_saldo = $dataSubtotal->subtotal_saldo;
+                $savedTotal = $simpanan->save();
+                if (!$savedTotal) {
+                    return back()->with('error', 'Gagal menyimpan perubahan pada total saldo.');
+                }
+            } else {
+                return back()->with('error', 'Gagal menghapus detail simpanan.');
+            }
+        } else {
+            return back()->with('error', 'Gagal menghapus detail simpanan.');
+        }
+        return redirect()->route('simpanan')->with('success', 'Detail Simpanan berhasil dihapus');
     }
 }
