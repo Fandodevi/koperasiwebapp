@@ -54,6 +54,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('admin/simpanan/edit/{id}', [SimpananController::class, 'edit'])->name('simpanan.edit');
         Route::put('admin/simpanan/edit/{id}', [SimpananController::class, 'update'])->name('simpanan.update');
         Route::get('admin/simpanan/{id}', [SimpananController::class, 'destroy'])->name('simpanan.destroy');
+        Route::get('admin/simpanan/view/delete/{id}', [SimpananController::class, 'destroyDetail'])->name('simpanan.destroy.detail');
 
         Route::get('admin/pinjaman', [PinjamanController::class, 'index'])->name('pinjaman');
         Route::get('admin/pinjaman/add', [PinjamanController::class, 'create'])->name('pinjaman.create');

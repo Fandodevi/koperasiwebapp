@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('detail_simpanan', function (Blueprint $table) {
+            $table->id('id');
             $table->unsignedBigInteger('id_simpanan')->required();
             $table->foreign('id_simpanan')->references('id_simpanan')->on('simpanan')->onDelete('cascade')->onUpdate('cascade');
             $table->unsignedBigInteger('id_users')->required();
