@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Anggota;
+use App\Models\Pinjaman;
+use App\Models\Simpanan;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -11,7 +15,12 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return view('pages.dashboard.index');
+        $jumlahAnggota = Anggota::count();
+        $jumlahPegawai = User::where('id_role', '=', '2')->count();
+        $jumlahSimpanan = Simpanan::count();
+        $jumlahPinjaman = Pinjaman::count();
+
+        return view('pages.dashboard.index', compact('jumlahAnggota', 'jumlahPegawai', 'jumlahSimpanan', 'jumlahPinjaman'));
     }
 
     /**
