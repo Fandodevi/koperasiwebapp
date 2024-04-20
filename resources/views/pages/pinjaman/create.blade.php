@@ -12,31 +12,30 @@
 
 @section('content')
     <main class="container">
-        <form action="{{ route('pinjaman.store') }}" method='POST' enctype="multipart/form-data">
-            @csrf
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <a href="{{ route('pinjaman') }}" class="btn btn-secondary">Kembali</a>
-                <div class="table-responsive p-0">
-                    <table class="table table-hover table-bordered align-items-center" id="myTable">
-                        <thead style="font-size: 10pt">
-                            <tr style="background-color: rgb(187, 246, 201)">
-                                <th class="text-center">No</th>
-                                <th class="text-center">NIK</th>
-                                <th class="text-center">No. Anggota</th>
-                                <th class="text-center">Nama</th>
-                                <th class="text-center">Tanggal Masuk</th>
-                                <th class="text-center">Alamat</th>
-                                <th class="text-center">Pekerjaan</th>
-                                <th class="text-center">No. Handphone</th>
-                                <th class="text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-center" style="font-size: 10pt">
-                        </tbody>
-                    </table>
-                </div>
+
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <a href="{{ route('pinjaman') }}" class="btn btn-secondary">Kembali</a>
+            <div class="table-responsive p-0">
+                <table class="table table-hover table-bordered align-items-center" id="myTable">
+                    <thead style="font-size: 10pt">
+                        <tr style="background-color: rgb(187, 246, 201)">
+                            <th class="text-center">No</th>
+                            <th class="text-center">NIK</th>
+                            <th class="text-center">No. Anggota</th>
+                            <th class="text-center">Nama</th>
+                            <th class="text-center">Tanggal Masuk</th>
+                            <th class="text-center">Alamat</th>
+                            <th class="text-center">Pekerjaan</th>
+                            <th class="text-center">No. Handphone</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center" style="font-size: 10pt">
+                    </tbody>
+                </table>
             </div>
-        </form>
+        </div>
+
     </main>
 
     <script>
@@ -85,8 +84,7 @@
                             return '<div class="row justify-content-center">' +
                                 '<div class="col-auto">' +
                                 '<button type="button" class="btn btn-primary m-1" data-bs-toggle="modal" data-bs-target="#basicModal' +
-                                data.id_anggota +
-                                '">Pilih</button>' +
+                                data.id_anggota + '">Pilih</button>' +
                                 '<div class="modal fade" id="basicModal' + data.id_anggota +
                                 '" tabindex="-1">' +
                                 '<div class="modal-dialog modal-lg">' +
@@ -96,25 +94,35 @@
                                 '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>' +
                                 '</div>' +
                                 '<div class="modal-body text-start">' +
+                                '<form id="formPinjaman' + data.id_anggota +
+                                '" action="{{ route('pinjaman.store') }}" method="POST" enctype="multipart/form-data">' +
+                                '@csrf' +
                                 '<input type="hidden" class="form-control" id="id_anggota" name="id_anggota" value="' +
-                                data.id_anggota + '" required >' +
+                                data.id_anggota + '" required>' +
                                 '<div class="mb-3 row">' +
-                                '<label for="angsuran" class="col-sm-2 col-form-label">Angusan Pinjaman</label>' +
+                                '<label for="angsuran' + data.id_anggota +
+                                '" class="col-sm-2 col-form-label">Angusan Pinjaman</label>' +
                                 '<div class="col-sm-12">' +
-                                '<input type="number" class="form-control" id="angsuran" name="angsuran" placeholder="Masukkan Angsuran" max="12" min="1" required">' +
+                                '<input type="number" class="form-control" id="angsuran' + data
+                                .id_anggota +
+                                '" name="angsuran" placeholder="Masukkan Angsuran" max="12" min="1" required>' +
                                 '</div>' +
                                 '</div>' +
                                 '<div class="mb-3 row">' +
-                                '<label for="nominal" class="col-sm-2 col-form-label">Nominal</label>' +
+                                '<label for="nominal_pinjaman' + data.id_anggota +
+                                '" class="col-sm-2 col-form-label">Nominal</label>' +
                                 '<div class="col-sm-12">' +
-                                '<input type="text" class="form-control nominal" id="nominal" name="nominal" placeholder="Masukkan Nominal" required pattern="[0-9]*">' +
+                                '<input type="text" class="form-control" id="nominal_pinjaman' +
+                                data.id_anggota +
+                                '" name="nominal_pinjaman" placeholder="Masukkan Nominal" required>' +
                                 '</div>' +
                                 '</div>' +
+                                '</form>' +
                                 '</div>' +
                                 '<div class="modal-footer">' +
                                 '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>' +
-                                '<button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Simpan</button>' +
-                                '</div>' +
+                                '<button type="submit" form="formPinjaman' + data.id_anggota +
+                                '" class="btn btn-primary">Simpan</button>' +
                                 '</div>' +
                                 '</div>' +
                                 '</div>' +

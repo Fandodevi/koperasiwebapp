@@ -51,7 +51,7 @@ class PinjamanController extends Controller
         $validator = Validator::make($request->all(), [
             'id_anggota' => 'required|exists:anggota,id_anggota',
             'angsuran' => 'required|max:12|min:1',
-            'nominal' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/'
+            'nominal_pinjaman' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/'
         ]);
 
         if ($validator->fails()) {
@@ -69,7 +69,7 @@ class PinjamanController extends Controller
 
         try {
             DB::transaction(function () use ($request) {
-                $angsuran_pokok = ceil($request->nominal / $request->angsuran);
+                $angsuran_pokok = ceil($request->nominal_pinjaman / $request->angsuran);
                 $bunga = ceil($angsuran_pokok * 0.01);
                 $subtotal_angsuran = ceil($angsuran_pokok + $bunga);
                 $sisa_lancar_angsuran = ceil($subtotal_angsuran * $request->angsuran);
@@ -77,7 +77,7 @@ class PinjamanController extends Controller
                 $pinjaman = new Pinjaman();
                 $pinjaman->id_anggota = $request->id_anggota;
                 $pinjaman->no_pinjaman = $this->generateMemberNumber();
-                $pinjaman->total_pinjaman = $request->nominal;
+                $pinjaman->total_pinjaman = $request->nominal_pinjaman;
                 $pinjaman->angsuran = $request->angsuran;
                 $pinjaman->sisa_lancar_keseluruhan = round($sisa_lancar_angsuran);
                 $pinjaman->status_pinjaman = 'Belum Lunas';
@@ -118,8 +118,8 @@ class PinjamanController extends Controller
      */
     public function show(Request $request, string $id)
     {
-        $pinjaman = Pinjaman::with(['anggota', 'detail_pinjaman'])->get();
-        $detail_pinjaman = DetailPinjaman::with(['pinjaman', 'users'])->get();
+        $pinjaman = Pinjaman::where('id_pinjaman', $id)->with(['anggota', 'detail_pinjaman'])->get();
+        $detail_pinjaman = DetailPinjaman::where('id_pinjaman', $id)->with(['pinjaman', 'users'])->get();
         $rowData = [];
 
         if ($request->ajax()) {
@@ -150,7 +150,35 @@ class PinjamanController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $pinjaman = Pinjaman::find($id);
+
+        if (!$pinjaman) {
+            return back()->with(['error' => 'Pinjaman tidak ditemukan. Silahkan coba kembali']);
+        }
+
+        $detail_pinjaman = DetailPinjaman::where('id_pinjaman', $id)
+            ->where('status_pelunasan', 'Belum Lunas')
+            ->orderBy('angsuran_ke_')
+            ->first();
+
+        if ($pinjaman->sisa_lancar_keseluruhan > 0.00) {
+            $pinjaman->sisa_lancar_keseluruhan -= $detail_pinjaman->subtotal_angsuran;
+        } else {
+            $pinjaman->status_pinjaman = 'Lunas';
+        }
+        if (!$pinjaman->update()) {
+            return back()->with(['error' => 'Gagal menyimpan pembayaran. Silahkan coba kembali']);
+        }
+        if (!$detail_pinjaman->status_pelunasan) {
+            return back()->with(['error' => 'Pinjaman sudah lunas']);
+        } else {
+            $detail_pinjaman->status_pelunasan = 'Lunas';
+        }
+
+        if (!$detail_pinjaman->update()) {
+            return back()->with(['error' => 'Gagal menyimpan pembayaran. Silahkan coba kembali']);
+        }
+        return back()->with(['success' => 'Pinjaman berhasil dibayar.']);
     }
 
     /**
@@ -158,7 +186,6 @@ class PinjamanController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
     }
 
     /**

@@ -93,12 +93,12 @@
             });
         </script>
     @endif
-    @if (session('error'))
+    @if ($errors->any())
         <script>
             Swal.fire({
                 icon: 'error',
-                title: 'Gagal',
-                text: '{{ session('error') }}'
+                title: 'Oopss...',
+                text: '{{ $errors->first() }}'
             });
         </script>
     @endif
@@ -110,7 +110,12 @@
                 ordering: true,
                 responsive: true,
                 serverSide: true,
-                ajax: "{{ route('pinjaman.show', '') }}/' + data.id_pinjaman +'",
+                ajax: {
+                    url: '{{ route('pinjaman.show', ['id' => ':id']) }}'.replace(':id', window.location
+                        .href.split('/').pop()),
+                    method: 'GET',
+                    dataSrc: 'data'
+                },
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex'
@@ -160,11 +165,15 @@
                     {
                         data: null,
                         render: function(data) {
+                            var status_pelunasan = data.status_pelunasan == 'Lunas' ? 'disabled' :
+                                '';
+
                             return '<div class="row justify-content-center">' +
                                 '<div class="col-auto">' +
-                                '<a href="" style="font-size: 10pt" class="btn btn-info m-1 edit-btn" ' +
+                                '<a href="{{ route('pinjaman.update', '') }}/' + data.id_pinjaman +
+                                '" style="font-size: 10pt" class="btn btn-info m-1 edit-btn" ' +
                                 'data-id="' + data.id +
-                                '">Bayar</a>' +
+                                '" ' + status_pelunasan + '>Bayar</a>' +
                                 '</div>' +
                                 '</div>';
                         }
