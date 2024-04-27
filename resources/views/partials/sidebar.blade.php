@@ -30,8 +30,9 @@
 
             <li class="nav-item ">
                 <a class="nav-link {{ set_active('pegawai') }}" href="{{ route('pegawai') }}">
-                    <img src="/icon/menuicon/customers.png" class="navbar-brand-img h-50 2em text-center me-2"
-                        style="max-height: 30px; max-width: 25px" alt="main_logo">
+                    <img src="{{ asset('/icon/menuicon/computer-worker.png') }}"
+                        class="navbar-brand-img h-50 2em text-center me-2" style="max-height: 30px; max-width: 25px"
+                        alt="main_logo">
                     <span class="nav-link-text ms-1">Pegawai</span>
                 </a>
             </li>
@@ -46,15 +47,16 @@
 
             <li class="nav-item ">
                 <a class="nav-link {{ set_active('simpanan') }}" href="{{ route('simpanan') }}">
-                    <img src="/icon/menuicon/customers.png" class="navbar-brand-img h-50 2em text-center me-2"
-                        style="max-height: 30px; max-width: 25px" alt="main_logo">
+                    <img src="{{ asset('/icon/menuicon/reduction.png') }}"
+                        class="navbar-brand-img h-50 2em text-center me-2" style="max-height: 30px; max-width: 25px"
+                        alt="main_logo">
                     <span class="nav-link-text ms-1">Simpanan</span>
                 </a>
             </li>
 
             <li class="nav-item ">
                 <a class="nav-link {{ set_active('pinjaman') }}" href="{{ route('pinjaman') }}">
-                    <img src="/icon/menuicon/customers.png" class="navbar-brand-img h-50 2em text-center me-2"
+                    <img src="{{ asset('/icon/menuicon/loan.png') }}" class="navbar-brand-img h-50 2em text-center me-2"
                         style="max-height: 30px; max-width: 25px" alt="main_logo">
                     <span class="nav-link-text ms-1">Pinjaman</span>
                 </a>
@@ -62,7 +64,7 @@
 
             <li class="nav-item ">
                 <a class="nav-link {{ set_active('laporan') }}" href="{{ route('laporan') }}">
-                    <img src="/icon/menuicon/customers.png" class="navbar-brand-img h-50 2em text-center me-2"
+                    <img src="{{ asset('/icon/menuicon/seo-report.png') }}" class="navbar-brand-img h-50 2em text-center me-2"
                         style="max-height: 30px; max-width: 25px" alt="main_logo">
                     <span class="nav-link-text ms-1">Laporan</span>
                 </a>

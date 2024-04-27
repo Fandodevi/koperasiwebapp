@@ -59,7 +59,7 @@ public function index(Request $request)
 
 public function delete($id)
 {
-   $data = userq::find($id);
+   $data = user::find($id);
    $data->delete();
    return redirect()->route('user')->with('success','Data Berhasil Di  Hapus');
 }
