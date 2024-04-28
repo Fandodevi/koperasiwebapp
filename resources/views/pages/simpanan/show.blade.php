@@ -83,8 +83,13 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="pb-2 mt-4">
-                    <a href='{{ route('simpanan') }}' class="btn btn-secondary">Kembali</a>
+                <div class="d-flex justify-content-between">
+                    <div class="pb-2 mt-4">
+                        <a href='{{ route('simpanan') }}' class="btn btn-secondary">Kembali</a>
+                    </div>
+                    <div class="pb-2 mt-4">
+                        <a href="{{ route('simpanan.export', ['id' => $simpanan->id_simpanan]) }}" class="btn btn-info">Cetak Laporan</a>
+                    </div>
                 </div>
             </div>
         </main>

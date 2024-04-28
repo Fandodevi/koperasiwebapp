@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExportAnggota;
 use App\Models\anggota;
 use App\Models\User;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
 class AnggotaController extends Controller
@@ -135,6 +139,28 @@ class AnggotaController extends Controller
         $users->delete();
 
         return redirect()->route('anggota')->with('success', 'Anggota berhasil dihapus');
+    }
+
+    public function export()
+    {
+        $data = anggota::count();
+        if ($data != 0) {
+            $anggota = anggota::all();
+            $html = view('pages.report.anggota', compact('anggota'))->render();
+
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->render();
+
+            $dompdf->stream('Anggota Koperasi.pdf');
+        } else {
+            return back()->withErrors(['error' => 'Data Anggota masih kosong. Silahkan coba kembali.']);
+        }
     }
 
     private function generateMemberNumber()

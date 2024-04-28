@@ -6,6 +6,8 @@ use App\Models\Anggota;
 use App\Models\DetailPinjaman;
 use App\Models\Pinjaman;
 use Carbon\Carbon;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +26,7 @@ class PinjamanController extends Controller
         if ($request->ajax()) {
             return DataTables::of($simpanan)
                 ->addColumn('DT_RowIndex', function ($simpanan) {
-                    return $simpanan->id_users;
+                    return $simpanan->id_pinjaman;
                 })
                 ->addColumn('nama', function ($simpanan) {
                     return $simpanan->anggota->nama;
@@ -51,7 +53,7 @@ class PinjamanController extends Controller
         $validator = Validator::make($request->all(), [
             'id_anggota' => 'required|exists:anggota,id_anggota',
             'angsuran' => 'required|max:12|min:1',
-            'nominal_pinjaman' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/'
+            'nominal_pinjaman' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/|max:5000000'
         ]);
 
         if ($validator->fails()) {
@@ -70,7 +72,7 @@ class PinjamanController extends Controller
         try {
             DB::transaction(function () use ($request) {
                 $angsuran_pokok = ceil($request->nominal_pinjaman / $request->angsuran);
-                $bunga = ceil($angsuran_pokok * 0.01);
+                $bunga = ceil($request->nominal_pinjaman * 0.01);
                 $subtotal_angsuran = ceil($angsuran_pokok + $bunga);
                 $sisa_lancar_angsuran = ceil($subtotal_angsuran * $request->angsuran);
 
@@ -193,7 +195,40 @@ class PinjamanController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $pinjaman = Pinjaman::where('id_pinjaman', $id)->first();
+        $pinjaman->delete();
+        return redirect()->route('pinjaman')->with('success', 'Pinjaman berhasil dihapus');
+    }
+
+    public function export($id)
+    {
+        $data = Pinjaman::find($id);
+        $dataAnggota = anggota::where('id_anggota', $data->id_anggota)->first();
+        if ($data) {
+            $pinjaman = Pinjaman::where('id_pinjaman', $id)->with(['anggota', 'detail_pinjaman'])->get();
+            $detail_pinjaman = DetailPinjaman::where('id_pinjaman', $id)->with(['pinjaman', 'users'])->get();
+            $angsuran = DetailPinjaman::where('id_pinjaman', $id)->first();
+
+            $html = view('pages.report.pinjaman', [
+                'pinjaman' => $pinjaman,
+                'detailPinjaman' => $detail_pinjaman,
+                'angsuran' => $angsuran,
+                'id' => $id
+            ])->render();
+
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->render();
+
+            $dompdf->stream('Pinjaman_' . $dataAnggota->nama . '.pdf');
+        } else {
+            return back()->withErrors(['error' => 'Data Pinjaman masih kosong. Silahkan coba kembali.']);
+        }
     }
 
     private function generateMemberNumber()

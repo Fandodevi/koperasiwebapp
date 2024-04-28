@@ -18,8 +18,13 @@
 
 
                 <!-- TOMBOL TAMBAH DATA -->
-                <div class="pb-2">
-                    <a href='{{ route('anggota.create') }}' class="btn btn-primary">+ Tambah Data</a>
+                <div class="d-flex justify-content-between">
+                    <div class="pb-2">
+                        <a href='{{ route('anggota.create') }}' class="btn btn-primary">+ Tambah Data</a>
+                    </div>
+                    <div class="pb-2">
+                        <a href='{{ route('anggota.export') }}' class="btn btn-secondary">Cetak PDF</a>
+                    </div>
                 </div>
 
                 {{-- <div class="pb-2">
@@ -61,6 +66,15 @@
                     icon: 'success',
                     title: 'Berhasil',
                     text: '{{ session('success') }}'
+                });
+            </script>
+        @endif
+        @if ($errors->any())
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oopss...',
+                    text: '{{ $errors->first() }}'
                 });
             </script>
         @endif

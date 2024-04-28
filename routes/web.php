@@ -39,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('admin/pegawai/edit/{id}', [PegawaiController::class, 'edit'])->name('pegawai.edit');
         Route::put('admin/pegawai/edit/{id}', [PegawaiController::class, 'update'])->name('pegawai.update');
         Route::get('admin/pegawai/{id}', [PegawaiController::class, 'destroy'])->name('pegawai.destroy');
+        Route::get('admin/pegawai/export/pdf', [PegawaiController::class, 'export'])->name('pegawai.export');
 
         Route::get('admin/anggota', [AnggotaController::class, 'index'])->name('anggota');
         Route::get('admin/anggota/add', [AnggotaController::class, 'create'])->name('anggota.create');
@@ -46,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('admin/anggota/edit/{id}', [AnggotaController::class, 'edit'])->name('anggota.edit');
         Route::put('admin/anggota/edit/{id}', [AnggotaController::class, 'update'])->name('anggota.update');
         Route::get('admin/anggota/{id}', [AnggotaController::class, 'destroy'])->name('anggota.destroy');
+        Route::get('admin/anggota/export/pdf', [AnggotaController::class, 'export'])->name('anggota.export');
 
         Route::get('admin/simpanan', [SimpananController::class, 'index'])->name('simpanan');
         Route::get('admin/simpanan/add', [SimpananController::class, 'create'])->name('simpanan.create');
@@ -55,6 +57,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('admin/simpanan/edit/{id}', [SimpananController::class, 'update'])->name('simpanan.update');
         Route::get('admin/simpanan/{id}', [SimpananController::class, 'destroy'])->name('simpanan.destroy');
         Route::get('admin/simpanan/view/delete/{id}', [SimpananController::class, 'destroyDetail'])->name('simpanan.destroy.detail');
+        Route::get('admin/simpanan/export/pdf/{id}', [SimpananController::class, 'export'])->name('simpanan.export');
 
         Route::get('admin/pinjaman', [PinjamanController::class, 'index'])->name('pinjaman');
         Route::get('admin/pinjaman/add', [PinjamanController::class, 'create'])->name('pinjaman.create');
@@ -63,6 +66,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('admin/pinjaman/edit/{id}', [PinjamanController::class, 'edit'])->name('pinjaman.edit');
         Route::put('admin/pinjaman/edit/{id}', [PinjamanController::class, 'update'])->name('pinjaman.update');
         Route::get('admin/pinjaman/{id}', [PinjamanController::class, 'destroy'])->name('pinjaman.destroy');
+        Route::get('admin/pinjaman/export/pdf/{id}', [PinjamanController::class, 'export'])->name('pinjaman.export');
 
         Route::get('admin/laporan', [LaporanController::class, 'index'])->name('laporan');
     });

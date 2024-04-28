@@ -60,12 +60,12 @@
                 });
             </script>
         @endif
-        @if (session('error'))
+        @if ($errors->any())
             <script>
                 Swal.fire({
                     icon: 'error',
-                    title: 'Gagal',
-                    text: '{{ session('error') }}'
+                    title: 'Oopss...',
+                    text: '{{ $errors->first() }}'
                 });
             </script>
         @endif
@@ -232,11 +232,9 @@
                                     '" style="font-size: 10pt" class="btn btn-secondary m-1 edit-btn" ' +
                                     'data-id="' + data.id +
                                     '">Lihat</a>' +
-                                    '<a href="" style="font-size: 10pt" class="btn btn-warning m-1 edit-btn" ' +
-                                    'data-id="' + data.id +
-                                    '">Edit</a>' +
-                                    '<a href="" style="font-size: 10pt" class="btn btn-danger m-1 delete-btn" ' +
-                                    'data-id="' + data.id +
+                                    '<a href="{{ route('pinjaman.destroy', '') }}/' + data.id_pinjaman +
+                                    '" style="font-size: 10pt" class="btn btn-danger m-1 delete-btn" ' +
+                                    'data-id="' + data.id_pinjaman +
                                     '">Hapus</a>' +
                                     '</div>' +
                                     '</div>';

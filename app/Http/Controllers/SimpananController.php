@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExportSimpananAnggota;
 use App\Models\anggota;
 use App\Models\DetailSimpanan;
 use App\Models\simpanan;
 use App\Models\User;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
 class SimpananController extends Controller
@@ -469,5 +473,55 @@ class SimpananController extends Controller
             return back()->with('error', 'Gagal menghapus detail simpanan.');
         }
         return redirect()->route('simpanan')->with('success', 'Detail Simpanan berhasil dihapus');
+    }
+
+    public function export($id)
+    {
+        $data = simpanan::find($id);
+        $dataAnggota = anggota::where('id_anggota', $data->id_anggota)->first();
+        if ($data) {
+            $simpanan = Simpanan::with(['anggota', 'detail_simpanan'])->where('id_simpanan', $id)->get();
+            $detail_simpanan = DetailSimpanan::where('id_simpanan', $id)->with(['simpanan'])->get();
+            $setor = DetailSimpanan::where('id_simpanan', $id)
+                ->where('jenis_transaksi', '=', 'Setor')
+                ->get();
+            $tarik = DetailSimpanan::where('id_simpanan', $id)
+                ->where('jenis_transaksi', '=', 'Tarik')
+                ->get();
+
+            $totalSimpananPokok = $setor->sum('simpanan_pokok');
+            $totalSimpananWajib = $setor->sum('simpanan_wajib');
+            $totalSimpananSukarela = $setor->sum('simpanan_sukarela');
+
+            $totalPenarikanPokok = $tarik->sum('simpanan_pokok');
+            $totalPenarikanWajib = $tarik->sum('simpanan_wajib');
+            $totalPenarikanSukarela = $tarik->sum('simpanan_sukarela');
+
+            $totalSimpananPokok -= $totalPenarikanPokok;
+            $totalSimpananWajib -= $totalPenarikanWajib;
+            $totalSimpananSukarela -= $totalPenarikanSukarela;
+
+            $html = view('pages.report.simpanan', [
+                'simpanan' => $simpanan,
+                'detailSimpanan' => $detail_simpanan,
+                'totalSimpananPokok' => $totalSimpananPokok,
+                'totalSimpananWajib' => $totalSimpananWajib,
+                'totalSimpananSukarela' => $totalSimpananSukarela,
+                'id' => $id
+            ])->render();
+
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->render();
+
+            $dompdf->stream('Simpanan_' . $dataAnggota->nama . '.pdf');
+        } else {
+            return back()->withErrors(['error' => 'Data Simpanan masih kosong. Silahkan coba kembali.']);
+        }
     }
 }

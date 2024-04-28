@@ -78,8 +78,14 @@
                     </tbody>
                 </table>
             </div>
-            <div class="pb-2 mt-4">
-                <a href='{{ route('pinjaman') }}' class="btn btn-secondary">Kembali</a>
+            <div class="d-flex justify-content-between">
+                <div class="pb-2 mt-4">
+                    <a href='{{ route('pinjaman') }}' class="btn btn-secondary">Kembali</a>
+                </div>
+                <div class="pb-2 mt-4">
+                    <a href="{{ route('pinjaman.export', ['id' => $angsuran->id_pinjaman]) }}" class="btn btn-info">Cetak
+                        Laporan</a>
+                </div>
             </div>
         </div>
     </main>

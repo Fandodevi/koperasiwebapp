@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExportPegawai;
 use App\Models\Anggota;
 use App\Models\User;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+// use Maatwebsite\Excel\Excel;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
 class PegawaiController extends Controller
@@ -134,8 +139,33 @@ class PegawaiController extends Controller
     public function destroy(string $id)
     {
         $users = User::where('id_users', $id)->first();
-        $users->delete();
+        if ($users) {
+            $users->delete();
+            return redirect()->route('pegawai')->with('success', 'Pegawai berhasil dihapus');
+        } else {
+            return back()->withErrors(['error' => 'Pegawai tidak ditemukan. Silahkan coba kembali.']);
+        }
+    }
 
-        return redirect()->route('pegawai')->with('success', 'Pengguna berhasil dihapus');
+    public function export()
+    {
+        $data = User::where('id_role', '=', 2)->count();
+        if ($data != 0) {
+            $users = User::where('id_role', 2)->get();
+            $html = view('pages.report.pegawai', compact('users'))->render();
+
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            $dompdf->stream('Pegawai Koperasi.pdf');
+        } else {
+            return back()->withErrors(['error' => 'Data Pegawai masih kosong. Silahkan coba kembali.']);
+        }
     }
 }
