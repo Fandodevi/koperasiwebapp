@@ -34,7 +34,7 @@ class UserFactory extends Factory
             'email' => $faker->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'id_role' => 2,
+            'id_role' => 3,
         ];
     }
 
