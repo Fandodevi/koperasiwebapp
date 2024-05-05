@@ -8,6 +8,7 @@ use App\Models\User;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
@@ -73,9 +74,18 @@ class AnggotaController extends Controller
         $anggota->pekerjaan = $request->pekerjaan;
         $anggota->tanggal_masuk = $request->tanggalmasuk;
         $anggota->jenis_anggota = $request->jenisanggota;
-        $anggota->save();
 
-        return redirect()->route('anggota')->with('success', 'Data anggota berhasil disimpan.');
+        if ($anggota->save()) {
+            if (Auth::user()->id_role == 1) {
+                return redirect()->route('admin.anggota')->with('success', 'Data anggota berhasil disimpan.');
+            } elseif (Auth::user()->id_role == 2) {
+                return redirect()->route('anggota')->with('success', 'Data anggota berhasil disimpan.');
+            } else {
+                return redirect()->route('pegawai.anggota')->with('success', 'Data anggota berhasil disimpan.');
+            }
+        } else {
+            return response()->json(['message' => 'Terjadi kesalahan saat menambahkan data'], 500);
+        }
     }
 
     /**
@@ -124,9 +134,15 @@ class AnggotaController extends Controller
         $anggota->tanggal_masuk = $request->tanggalmasuk;
 
         if ($anggota->save()) {
-            return redirect()->route('anggota')->with('success', 'Data Anggota berhasil diperbarui.');
+            if (Auth::user()->id_role == 1) {
+                return redirect()->route('admin.anggota')->with('success', 'Data Anggota berhasil diperbarui.');
+            } elseif (Auth::user()->id_role == 2) {
+                return redirect()->route('anggota')->with('success', 'Data Anggota berhasil diperbarui.');
+            } else {
+                return redirect()->route('pegawai.anggota')->with('success', 'Data Anggota berhasil diperbarui.');
+            }
         } else {
-            return back()->withErrors(['error' => 'Gagal menyimpan data. Silahkan coba kembali.']);
+            return response()->json(['message' => 'Terjadi kesalahan saat menambahkan data'], 500);
         }
     }
 
@@ -136,9 +152,18 @@ class AnggotaController extends Controller
     public function destroy(string $id)
     {
         $users = anggota::where('id_anggota', $id)->first();
-        $users->delete();
-
-        return redirect()->route('anggota')->with('success', 'Anggota berhasil dihapus');
+        if ($users) {
+            $users->delete();
+            if (Auth::user()->id_role == 1) {
+                return redirect()->route('admin.anggota')->with('success', 'Data anggota berhasil dihapus.');
+            } elseif (Auth::user()->id_role == 2) {
+                return redirect()->route('anggota')->with('success', 'Data anggota berhasil dihapus.');
+            } else {
+                return redirect()->route('pegawai.anggota')->with('success', 'Data anggota berhasil dihapus.');
+            }
+        } else {
+            return response()->json(['message' => 'Terjadi kesalahan saat menambahkan data'], 500);
+        }
     }
 
     public function export()

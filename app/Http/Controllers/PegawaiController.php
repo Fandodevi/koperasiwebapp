@@ -193,7 +193,7 @@ class PegawaiController extends Controller
                 return redirect()->route('pegawai.pegawai')->with('success', 'Data pegawai berhasil dihapus.');
             }
         } else {
-            return back()->withErrors(['error' => 'Pegawai tidak ditemukan. Silahkan coba kembali.']);
+            return response()->json(['message' => 'Terjadi kesalahan saat menghapus data'], 500);
         }
     }
 
