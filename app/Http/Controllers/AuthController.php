@@ -37,6 +37,8 @@ class AuthController extends Controller
 
                 if (Auth::user()->id_role == '1') {
                     return redirect('admin/dashboard');
+                } elseif (Auth::user()->id_role == '2') {
+                    return redirect('kepala/dashboard');
                 } else {
                     return redirect('dashboard');
                 }

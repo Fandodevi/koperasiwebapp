@@ -7,6 +7,7 @@ use App\Models\Pinjaman;
 use App\Models\Simpanan;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -15,12 +16,28 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $jumlahAnggota = Anggota::count();
-        $jumlahPegawai = User::where('id_role', '=', '2')->count();
-        $jumlahSimpanan = Simpanan::count();
-        $jumlahPinjaman = Pinjaman::count();
+        if (Auth::user()->id_role == 1) {
+            $jumlahAnggota = Anggota::count();
+            $jumlahPegawai = User::where('id_role', '=', '3')->count();
+            $jumlahSimpanan = Simpanan::count();
+            $jumlahPinjaman = Pinjaman::count();
 
-        return view('pages.dashboard.index', compact('jumlahAnggota', 'jumlahPegawai', 'jumlahSimpanan', 'jumlahPinjaman'));
+            return view('pages.dashboard.index', compact('jumlahAnggota', 'jumlahPegawai', 'jumlahSimpanan', 'jumlahPinjaman'));
+        } elseif (Auth::user()->id_role == 2) {
+            $jumlahAnggota = Anggota::count();
+            $jumlahPegawai = User::where('id_role', '=', '3')->count();
+            $jumlahSimpanan = Simpanan::count();
+            $jumlahPinjaman = Pinjaman::count();
+
+            return view('pages.dashboard.index', compact('jumlahAnggota', 'jumlahPegawai', 'jumlahSimpanan', 'jumlahPinjaman'));
+        } else {
+            $jumlahAnggota = Anggota::count();
+            $jumlahPegawai = User::where('id_role', '=', '3')->count();
+            $jumlahSimpanan = Simpanan::count();
+            $jumlahPinjaman = Pinjaman::count();
+
+            return view('pages.dashboard.index', compact('jumlahAnggota', 'jumlahPegawai', 'jumlahSimpanan', 'jumlahPinjaman'));
+        }
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PinjamanController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SimpananController;
 use App\Http\Controllers\UserController;
 /*
@@ -48,6 +49,8 @@ Route::middleware(['auth'])->group(function () {
         Route::put('admin/anggota/edit/{id}', [AnggotaController::class, 'update'])->name('admin.anggota.update');
         Route::get('admin/anggota/{id}', [AnggotaController::class, 'destroy'])->name('admin.anggota.destroy');
         Route::get('admin/anggota/export/pdf', [AnggotaController::class, 'export'])->name('admin.anggota.export');
+        
+        Route::get('admin/profile', [ProfileController::class, 'index'])->name('admin.profile');
     });
     
     Route::group(['middleware' => 'kepala'], function () {
