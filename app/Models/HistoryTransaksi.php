@@ -20,6 +20,11 @@ class HistoryTransaksi extends Model
         return $this->belongsTo(DetailSimpanan::class, 'id_detail_simpanan', 'id_detail_simpanan');
     }
 
+    public function pinjaman()
+    {
+        return $this->belongsTo(Pinjaman::class, 'id_pinjaman', 'id_pinjaman');
+    }
+    
     public function detail_pinjaman()
     {
         return $this->belongsTo(DetailPinjaman::class, 'id_detail_pinjaman', 'id_detail_pinjaman');

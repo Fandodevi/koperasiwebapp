@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreign('id_users')->references('id_users')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->unsignedBigInteger('id_detail_simpanan')->nullable();
             $table->foreign('id_detail_simpanan')->references('id')->on('detail_simpanan')->onDelete('cascade')->onUpdate('cascade');
+            $table->unsignedBigInteger('id_pinjaman')->nullable();
+            $table->foreign('id_pinjaman')->references('id_pinjaman')->on('pinjaman')->onDelete('cascade')->onUpdate('cascade');
             $table->unsignedBigInteger('id_detail_pinjaman')->nullable();
             $table->foreign('id_detail_pinjaman')->references('id')->on('detail_pinjaman')->onDelete('cascade')->onUpdate('cascade');
             $table->enum('tipe_transaksi', ['Pemasukan', 'Pengeluaran']);

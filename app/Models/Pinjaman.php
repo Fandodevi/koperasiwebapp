@@ -25,4 +25,9 @@ class Pinjaman extends Model
     {
         return $this->hasMany(DetailPinjaman::class, 'id_pinjaman', 'id_pinjaman');
     }
+
+    public function history_transaksi()
+    {
+        return $this->belongsTo(HistoryTransaksi::class, 'id_pinjaman', 'id_pinjaman');
+    }
 }
