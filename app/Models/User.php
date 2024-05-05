@@ -49,7 +49,7 @@ class User extends Authenticatable
     ];
 
     protected $attributes = [
-        'id_role' => 2,
+        'id_role' => 3,
     ];
 
     public function role()

@@ -8,6 +8,7 @@ use App\Models\User;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 // use Maatwebsite\Excel\Excel;
@@ -21,7 +22,7 @@ class PegawaiController extends Controller
      */
     public function index(Request $request)
     {
-        $users = User::where('id_role', '=', '2')->with('role');
+        $users = User::where('id_role', '=', '3')->with('role');
 
         if ($request->ajax()) {
             return DataTables::of($users)
@@ -48,12 +49,13 @@ class PegawaiController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nik' => 'required|digits:16',
+            'nik' => 'required|digits:16|unique:users',
             'nama' => 'required',
             'email' => 'required|unique:users|email',
             'jeniskelamin' => 'required|in:Laki-Laki,Perempuan',
             'alamat' => 'required',
             'noTelp' => 'required|numeric',
+            'password' => 'required|min:8',
         ]);
 
         if ($validator->fails()) {
@@ -66,13 +68,22 @@ class PegawaiController extends Controller
         $pegawai->nik = $request->nik;
         $pegawai->nama = $request->nama;
         $pegawai->email = $request->email;
-        $pegawai->password = Hash::make('12345678');
+        $pegawai->password = $request->password;
         $pegawai->jenis_kelamin = $request->jeniskelamin;
         $pegawai->alamat = $request->alamat;
         $pegawai->no_telp = $request->noTelp;
-        $pegawai->save();
 
-        return redirect()->route('pegawai')->with('success', 'Data pegawai berhasil disimpan.');
+        if ($pegawai->save()) {
+            if (Auth::user()->id_role == 1) {
+                return redirect()->route('admin.pegawai')->with('success', 'Data pegawai berhasil disimpan.');
+            } elseif (Auth::user()->id_role == 2) {
+                return redirect()->route('pegawai')->with('success', 'Data pegawai berhasil disimpan.');
+            } else {
+                return redirect()->route('pegawai.pegawai')->with('success', 'Data pegawai berhasil disimpan.');
+            }
+        } else {
+            return response()->json(['message' => 'Terjadi kesalahan saat menambahkan data'], 500);
+        }
     }
 
     /**
@@ -103,33 +114,66 @@ class PegawaiController extends Controller
             return back()->withErrors(['error' => 'Pegawai tidak ditemukan. Silahkan coba kembali']);
         }
 
-        $validator = Validator::make($request->all(), [
-            'nik' => 'required|digits:16',
-            'nama' => 'required',
-            'email' => 'required|email|unique:users,email,' . $id . ',id_users',
-            'jeniskelamin' => 'required|in:Laki-Laki,Perempuan',
-            'alamat' => 'required',
-            'noTelp' => 'required|numeric',
-        ]);
+        if ($request->new_password == null) {
+            $validator = Validator::make($request->all(), [
+                'nik' => 'required|digits:16',
+                'nama' => 'required',
+                'email' => 'required|email|unique:users,email,' . $id . ',id_users',
+                'jeniskelamin' => 'required|in:Laki-Laki,Perempuan',
+                'alamat' => 'required',
+                'noTelp' => 'required|numeric',
+            ]);
 
 
-        if ($validator->fails()) {
-            return back()
-                ->withErrors($validator)
-                ->withInput();
+            if ($validator->fails()) {
+                return back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            $pegawai->nik = $request->nik;
+            $pegawai->nama = $request->nama;
+            $pegawai->email = $request->email;
+            $pegawai->jenis_kelamin = $request->jeniskelamin;
+            $pegawai->alamat = $request->alamat;
+            $pegawai->no_telp = $request->noTelp;
+        } else {
+            $validator = Validator::make($request->all(), [
+                'nik' => 'required|digits:16',
+                'nama' => 'required',
+                'email' => 'required|email|unique:users,email,' . $id . ',id_users',
+                'jeniskelamin' => 'required|in:Laki-Laki,Perempuan',
+                'alamat' => 'required',
+                'noTelp' => 'required|numeric',
+                'new_password' => 'required|min:8',
+            ]);
+
+
+            if ($validator->fails()) {
+                return back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            $pegawai->nik = $request->nik;
+            $pegawai->nama = $request->nama;
+            $pegawai->email = $request->email;
+            $pegawai->jenis_kelamin = $request->jeniskelamin;
+            $pegawai->alamat = $request->alamat;
+            $pegawai->no_telp = $request->noTelp;
+            $pegawai->password = $request->new_password;
         }
 
-        $pegawai->nik = $request->nik;
-        $pegawai->nama = $request->nama;
-        $pegawai->email = $request->email;
-        $pegawai->jenis_kelamin = $request->jeniskelamin;
-        $pegawai->alamat = $request->alamat;
-        $pegawai->no_telp = $request->noTelp;
-
         if ($pegawai->save()) {
-            return redirect()->route('pegawai')->with('success', 'Data Pegawai berhasil diperbarui.');
+            if (Auth::user()->id_role == 1) {
+                return redirect()->route('admin.pegawai')->with('success', 'Data pegawai berhasil diperbarui.');
+            } elseif (Auth::user()->id_role == 2) {
+                return redirect()->route('pegawai')->with('success', 'Data pegawai berhasil diperbarui.');
+            } else {
+                return redirect()->route('pegawai.pegawai')->with('success', 'Data pegawai berhasil diperbarui.');
+            }
         } else {
-            return back()->withErrors(['error' => 'Gagal menyimpan data. Silahkan coba kembali.']);
+            return response()->json(['message' => 'Terjadi kesalahan saat menambahkan data'], 500);
         }
     }
 
@@ -141,7 +185,13 @@ class PegawaiController extends Controller
         $users = User::where('id_users', $id)->first();
         if ($users) {
             $users->delete();
-            return redirect()->route('pegawai')->with('success', 'Pegawai berhasil dihapus');
+            if (Auth::user()->id_role == 1) {
+                return redirect()->route('admin.pegawai')->with('success', 'Data pegawai berhasil dihapus.');
+            } elseif (Auth::user()->id_role == 2) {
+                return redirect()->route('pegawai')->with('success', 'Data pegawai berhasil dihapus.');
+            } else {
+                return redirect()->route('pegawai.pegawai')->with('success', 'Data pegawai berhasil dihapus.');
+            }
         } else {
             return back()->withErrors(['error' => 'Pegawai tidak ditemukan. Silahkan coba kembali.']);
         }
