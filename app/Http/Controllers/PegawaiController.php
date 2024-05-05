@@ -68,7 +68,7 @@ class PegawaiController extends Controller
         $pegawai->nik = $request->nik;
         $pegawai->nama = $request->nama;
         $pegawai->email = $request->email;
-        $pegawai->password = $request->password;
+        $pegawai->password = Hash::make($request->password);
         $pegawai->jenis_kelamin = $request->jeniskelamin;
         $pegawai->alamat = $request->alamat;
         $pegawai->no_telp = $request->noTelp;
@@ -161,7 +161,7 @@ class PegawaiController extends Controller
             $pegawai->jenis_kelamin = $request->jeniskelamin;
             $pegawai->alamat = $request->alamat;
             $pegawai->no_telp = $request->noTelp;
-            $pegawai->password = $request->new_password;
+            $pegawai->password = Hash::make($request->new_password);
         }
 
         if ($pegawai->save()) {

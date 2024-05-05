@@ -49,10 +49,11 @@ Route::middleware(['auth'])->group(function () {
         Route::put('admin/anggota/edit/{id}', [AnggotaController::class, 'update'])->name('admin.anggota.update');
         Route::get('admin/anggota/{id}', [AnggotaController::class, 'destroy'])->name('admin.anggota.destroy');
         Route::get('admin/anggota/export/pdf', [AnggotaController::class, 'export'])->name('admin.anggota.export');
-        
+
         Route::get('admin/profile', [ProfileController::class, 'index'])->name('admin.profile');
+        Route::put('admin/profile/{id}', [ProfileController::class, 'update'])->name('admin.profile.update');
     });
-    
+
     Route::group(['middleware' => 'kepala'], function () {
         Route::get('kepala/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -92,8 +93,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('kepala/pinjaman/export/pdf/{id}', [PinjamanController::class, 'export'])->name('pinjaman.export');
 
         Route::get('kepala/laporan', [LaporanController::class, 'index'])->name('laporan');
+
+        Route::get('kepala/profile', [ProfileController::class, 'index'])->name('profile');
+        Route::put('kepala/profile/{id}', [ProfileController::class, 'update'])->name('profile.update');
     });
-    
+
     Route::group(['middleware' => 'pegawai'], function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('pegawai.dashboard');
 
@@ -128,6 +132,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('pinjaman/{id}', [PinjamanController::class, 'destroy'])->name('pegawai.pinjaman.destroy');
 
         Route::get('laporan', [LaporanController::class, 'index'])->name('pegawai.laporan');
+
+        Route::get('profile', [ProfileController::class, 'index'])->name('pegawai.profile');
+        Route::put('profile/{id}', [ProfileController::class, 'update'])->name('pegawai.profile.update');
     });
 });
 
