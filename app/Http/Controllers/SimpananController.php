@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\ExportSimpananAnggota;
 use App\Models\anggota;
 use App\Models\DetailSimpanan;
+use App\Models\HistoryTransaksi;
 use App\Models\simpanan;
 use App\Models\User;
 use Dompdf\Dompdf;
@@ -111,6 +112,15 @@ class SimpananController extends Controller
 
                     if (!$detail_simpanan->save()) {
                         throw new \Exception('Gagal menyimpan data detail simpanan.');
+                    }
+
+                    $history = new HistoryTransaksi();
+                    $history->id_users = Auth::user()->id_users;
+                    $history->id_detail_simpanan = $detail_simpanan->id;
+                    $history->tipe_transaksi = 'Pemasukan';
+
+                    if (!$history->save()) {
+                        throw new \Exception('Gagal menyimpan data history transaksi.');
                     }
                 } else {
                     throw new \Exception('Gagal menyimpan data simpanan.');
@@ -417,6 +427,19 @@ class SimpananController extends Controller
 
                     if (!$data->save() || !$detail_simpanan->save()) {
                         throw new \Exception('Gagal menyimpan transaksi simpanan. Silahkan coba lagi');
+                    }
+
+                    $history = new HistoryTransaksi();
+                    $history->id_users = Auth::user()->id_users;
+                    $history->id_detail_simpanan = $detail_simpanan->id;
+                    if ($jenisTransaksi == 'Setor') {
+                        $history->tipe_transaksi = 'Pemasukan';
+                    } else {
+                        $history->tipe_transaksi = 'Pengeluaran';
+                    }
+
+                    if (!$history->save()) {
+                        throw new \Exception('Gagal menyimpan data history transaksi.');
                     }
                 });
 

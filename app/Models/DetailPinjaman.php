@@ -9,6 +9,7 @@ class DetailPinjaman extends Model
 {
     use HasFactory;
     protected $table = 'detail_pinjaman';
+    protected $primaryKey = 'id';
     protected $guarded = [];
     protected $casts = [
         'created_at' => 'datetime',
@@ -18,6 +19,11 @@ class DetailPinjaman extends Model
     public function pinjaman()
     {
         return $this->belongsTo(Pinjaman::class, 'id_pinjaman', 'id_pinjaman');
+    }
+    
+    public function history_transaksi()
+    {
+        return $this->belongsTo(HistoryTransaksi::class, 'id_detail_pinjaman', 'id_detail_pinjaman');
     }
 
     public function users()

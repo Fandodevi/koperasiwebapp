@@ -42,6 +42,9 @@
                                 <th class="text-center">Alamat</th>
                                 <th class="text-center">Pekerjaan</th>
                                 <th class="text-center">No. Handphone</th>
+                                @if (Auth::user()->id_role != 1)
+                                    <th class="text-center">Transaksi</th>
+                                @endif
                                 <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -242,10 +245,12 @@
                                         '" style="font-size: 10pt" class="btn btn-warning m-1 edit-btn" ' +
                                         'data-id="' + data.id +
                                         '">Edit</a>' +
+                                        '<div class="col-auto">' +
                                         '<a href="{{ route('anggota.destroy', '') }}/' + data.id_anggota +
                                         '" style="font-size: 10pt" class="btn btn-danger m-1 delete-btn" ' +
                                         'data-id="' + data.id +
                                         '">Hapus</a>' +
+                                        '</div>' +
                                         '</div>' +
                                         '</div>';
                                 }

@@ -66,4 +66,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(DetailPinjaman::class, 'id_users', 'id_users');
     }
+    
+    public function history_transaksi()
+    {
+        return $this->hasMany(HistoryTransaksi::class, 'id_users', 'id_users');
+    }
 }

@@ -1,14 +1,7 @@
 @extends('layouts.main')
 
-@section('subjudul')
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-white" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-white active" aria-current="page">Data Simpanan</li>
-        </ol>
-        <h6 class="font-weight-bolder text-white mb-0">Data Simpanan</h6>
-    </nav>
-@endsection
+@section('title', 'Simpanan')
+@section('subtitle', 'Data Simpanan')
 
 @section('content')
 
@@ -205,14 +198,16 @@
                             render: function(data) {
                                 return '<div class="row justify-content-center">' +
                                     '<div class="col-auto">' +
-                                    '<a href="{{ route('simpanan.show', '') }}/' + data.id_simpanan +
-                                    '" style="font-size: 10pt" class="btn btn-secondary m-1 edit-btn" ' +
-                                    'data-id="' + data.id_simpanan +
-                                    '">Lihat</a>' +
+                                        '<a href="{{ route('simpanan.show', '') }}/' + data.id_simpanan +
+                                        '" style="font-size: 10pt" class="btn btn-secondary m-1 edit-btn" ' +
+                                        'data-id="' + data.id_simpanan +
+                                        '">Lihat</a>' +
+                                        '<div class="col-auto">' +
                                     '<a href="{{ route('simpanan.destroy', '') }}/' + data.id_simpanan +
                                     '" style="font-size: 10pt" class="btn btn-danger m-1 delete-btn" ' +
                                     'data-id="' + data.id +
                                     '">Hapus</a>' +
+                                    '</div>' +
                                     '</div>' +
                                     '</div>';
                             }

@@ -10,6 +10,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PinjamanController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RekapTransaksiController;
 use App\Http\Controllers\SimpananController;
 use App\Http\Controllers\UserController;
 /*
@@ -94,6 +95,8 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('kepala/laporan', [LaporanController::class, 'index'])->name('laporan');
 
+        Route::get('kepala/rekap', [RekapTransaksiController::class, 'index'])->name('rekap');
+
         Route::get('kepala/profile', [ProfileController::class, 'index'])->name('profile');
         Route::put('kepala/profile/{id}', [ProfileController::class, 'update'])->name('profile.update');
     });
@@ -132,6 +135,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('pinjaman/{id}', [PinjamanController::class, 'destroy'])->name('pegawai.pinjaman.destroy');
 
         Route::get('laporan', [LaporanController::class, 'index'])->name('pegawai.laporan');
+
+        Route::get('rekap', [RekapTransaksiController::class, 'index'])->name('pegawai.rekap');
 
         Route::get('profile', [ProfileController::class, 'index'])->name('pegawai.profile');
         Route::put('profile/{id}', [ProfileController::class, 'update'])->name('pegawai.profile.update');

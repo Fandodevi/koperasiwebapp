@@ -1,14 +1,7 @@
 @extends('layouts.main')
 
-@section('subjudul')
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-white" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-white active" aria-current="page">Data Detail Simpanan</li>
-        </ol>
-        <h6 class="font-weight-bolder text-white mb-0">Data Detail Simpanan</h6>
-    </nav>
-@endsection
+@section('title', 'Simpanan')
+@section('subtitle', 'Detail Simpanan')
 
 @section('content')
 
@@ -88,7 +81,8 @@
                         <a href='{{ route('simpanan') }}' class="btn btn-secondary">Kembali</a>
                     </div>
                     <div class="pb-2 mt-4">
-                        <a href="{{ route('simpanan.export', ['id' => $simpanan->id_simpanan]) }}" class="btn btn-info">Cetak Laporan</a>
+                        <a href="{{ route('simpanan.export', ['id' => $simpanan->id_simpanan]) }}"
+                            class="btn btn-info">Cetak Laporan</a>
                     </div>
                 </div>
             </div>

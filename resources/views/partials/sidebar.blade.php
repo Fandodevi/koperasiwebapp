@@ -164,6 +164,26 @@
                 @endif
             </li>
 
+            <li class="nav-item ">
+                @if (Auth::user()->id_role == 2)
+                    <a class="@if (request()->is('kepala/rekap')) nav-link active @else nav-link collapsed @endif"
+                        href="{{ route('rekap') }}">
+                        <img src="{{ asset('/icon/menuicon/checklist.png') }}"
+                            class="navbar-brand-img h-50 2em text-center me-2"
+                            style="max-height: 30px; max-width: 25px" alt="main_logo">
+                        <span class="nav-link-text ms-1">Rekap Transaksi</span>
+                    </a>
+                @elseif (Auth::user()->id_role == 3)
+                    <a class="@if (request()->is('laporan')) nav-link active @else nav-link collapsed @endif"
+                        href="{{ route('pegawai.rekap') }}">
+                        <img src="{{ asset('/icon/menuicon/checklist.png') }}"
+                            class="navbar-brand-img h-50 2em text-center me-2"
+                            style="max-height: 30px; max-width: 25px" alt="main_logo">
+                        <span class="nav-link-text ms-1">Rekap Transaksi</span>
+                    </a>
+                @endif
+            </li>
+
 
             <li class="nav-item mt-3">
                 <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">SETTINGS</h6>
@@ -173,21 +193,24 @@
                 @if (Auth::user()->id_role == 1)
                     <a class="@if (request()->is('admin/profile')) nav-link active @else nav-link collapsed @endif"
                         href="{{ route('admin.profile') }}">
-                        <img src="{{ asset('icon/menuicon/profile.png') }}" class="navbar-brand-img h-50 2em text-center me-2"
+                        <img src="{{ asset('icon/menuicon/profile.png') }}"
+                            class="navbar-brand-img h-50 2em text-center me-2"
                             style="max-height: 30px; max-width: 25px" alt="main_logo">
                         <span class="nav-link-text ms-1">Profile</span>
                     </a>
                 @elseif (Auth::user()->id_role == 2)
                     <a class="@if (request()->is('kepala/profile')) nav-link active @else nav-link collapsed @endif"
                         href="{{ route('profile') }}">
-                        <img src="{{ asset('icon/menuicon/profile.png') }}" class="navbar-brand-img h-50 2em text-center me-2"
+                        <img src="{{ asset('icon/menuicon/profile.png') }}"
+                            class="navbar-brand-img h-50 2em text-center me-2"
                             style="max-height: 30px; max-width: 25px" alt="main_logo">
                         <span class="nav-link-text ms-1">Profile</span>
                     </a>
                 @else
                     <a class="@if (request()->is('pegawai/profile')) nav-link active @else nav-link collapsed @endif"
                         href="{{ route('pegawai.profile') }}">
-                        <img src="{{ asset('icon/menuicon/profile.png') }}" class="navbar-brand-img h-50 2em text-center me-2"
+                        <img src="{{ asset('icon/menuicon/profile.png') }}"
+                            class="navbar-brand-img h-50 2em text-center me-2"
                             style="max-height: 30px; max-width: 25px" alt="main_logo">
                         <span class="nav-link-text ms-1">profile</span>
                     </a>

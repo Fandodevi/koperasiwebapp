@@ -50,8 +50,6 @@
 
                 </div>
             </div>
-
-            <!-- AKHIR DATA -->
         </main>
 
         @if (session('success'))
@@ -184,11 +182,11 @@
                                 render: function(data) {
                                     return '<div class="row justify-content-center">' +
                                         '<div class="col-auto">' +
-                                        '<a href="{{ route('admin.pegawai.edit', '') }}/' + data.id_users +
+                                        '<a href="{{ route('pegawai.edit', '') }}/' + data.id_users +
                                         '" style="font-size: 10pt" class="btn btn-info m-1 edit-btn" ' +
                                         'data-id="' + data.id +
                                         '">Edit</a>' +
-                                        '<a href="{{ route('admin.pegawai.destroy', '') }}/' + data
+                                        '<a href="{{ route('pegawai.destroy', '') }}/' + data
                                         .id_users +
                                         '" style="font-size: 10pt" class="btn btn-danger m-1 delete-btn" ' +
                                         'data-id="' + data.id +

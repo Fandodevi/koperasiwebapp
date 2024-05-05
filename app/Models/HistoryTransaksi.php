@@ -5,25 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DetailSimpanan extends Model
+class HistoryTransaksi extends Model
 {
     use HasFactory;
-    protected $table = 'detail_simpanan';
-    protected $primaryKey = 'id';
+    protected $table = 'history_transaksi';
     protected $guarded = [];
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
-    public function simpanan()
+    public function detail_simpanan()
     {
-        return $this->belongsTo(Simpanan::class, 'id_simpanan', 'id_simpanan');
+        return $this->belongsTo(DetailSimpanan::class, 'id_detail_simpanan', 'id_detail_simpanan');
     }
 
-    public function history_transaksi()
+    public function detail_pinjaman()
     {
-        return $this->belongsTo(HistoryTransaksi::class, 'id_detail_simpanan', 'id_detail_simpanan');
+        return $this->belongsTo(DetailPinjaman::class, 'id_detail_pinjaman', 'id_detail_pinjaman');
     }
 
     public function users()
