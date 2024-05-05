@@ -20,7 +20,13 @@
                         @endif
                     </div>
                     <div class="pb-2">
-                        <a href='{{ route('pegawai.export') }}' class="btn btn-secondary">Cetak PDF</a>
+                        @if (Auth::user()->id_role == 1)
+                            <a href='{{ route('admin.pegawai.export') }}' class="btn btn-secondary">Cetak PDF</a>
+                        @elseif (Auth::user()->id_role == 2)
+                            <a href='{{ route('pegawai.export') }}' class="btn btn-secondary">Cetak PDF</a>
+                        @else
+                            <a href='{{ route('pegawai.pegawai.export') }}' class="btn btn-secondary">Cetak PDF</a>
+                        @endif
                     </div>
                 </div>
 
@@ -251,7 +257,8 @@
                                 render: function(data) {
                                     return '<div class="row justify-content-center">' +
                                         '<div class="col-auto">' +
-                                        '<a href="{{ route('pegawai.pegawai.edit', '') }}/' + data.id_users +
+                                        '<a href="{{ route('pegawai.pegawai.edit', '') }}/' + data
+                                        .id_users +
                                         '" style="font-size: 10pt" class="btn btn-info m-1 edit-btn" ' +
                                         'data-id="' + data.id +
                                         '">Edit</a>' +

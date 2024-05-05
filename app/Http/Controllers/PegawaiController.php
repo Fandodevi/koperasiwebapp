@@ -199,9 +199,9 @@ class PegawaiController extends Controller
 
     public function export()
     {
-        $data = User::where('id_role', '=', 2)->count();
+        $data = User::where('id_role', '=', 3)->count();
         if ($data != 0) {
-            $users = User::where('id_role', 2)->get();
+            $users = User::where('id_role', 3)->get();
             $html = view('pages.report.pegawai', compact('users'))->render();
 
             $options = new Options();
