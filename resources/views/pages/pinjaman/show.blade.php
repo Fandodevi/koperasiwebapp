@@ -1,14 +1,7 @@
 @extends('layouts.main')
 
-@section('subjudul')
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-white" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-white active" aria-current="page">Data Detail Pinjaman</li>
-        </ol>
-        <h6 class="font-weight-bolder text-white mb-0">Data Detail Pinjaman</h6>
-    </nav>
-@endsection
+@section('title', 'Pinjaman')
+@section('subtitle', 'Detail Pinjaman')
 
 @section('content')
 
@@ -27,51 +20,46 @@
                 </div>
             @endif
             <div class="d-flex align-items-end row">
-                @foreach ($pinjaman as $index => $item)
-                    <div class="col-sm-12">
-                        <div class="card-body">
-                            <h5 class="card-title text-primary">Detail Pinjaman</h5>
-                            <div class="row d-flex justify-content-between">
-                                <div class="col-md-8">
-                                    <p class="mt-4">
-                                        No Anggota : {{ $item->anggota->no_anggota }}
-                                    </p>
-                                    <p class="mt-4">
-                                        Nama : {{ $item->anggota->nama }}
-                                    </p>
-                                    <p class="mt-4">
-                                        Besar Pinjaman : Rp {{ number_format($item->total_pinjaman, 2, ',', '.') }}
-                                    </p>
-                                </div>
-                                <div class="col-md-4">
-                                    <p class="mt-4">
-                                        No. Pinjaman : {{ $item->no_pinjaman }}
-                                    </p>
-                                    <p class="mt-4">
-                                        Tanggal Realisasi : {{ $item->tanggal_realisasi }}
-                                    </p>
-                                    <p class="mt-4">
-                                        Angsuran : Rp {{ number_format($angsuran->subtotal_angsuran, 2, ',', '.') }} x
-                                        {{ $item->angsuran }}
-                                    </p>
-                                </div>
+                <div class="col-sm-12">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Detail Pinjaman</h5>
+                        <div class="row d-flex justify-content-between">
+                            <div class="col-md-8">
+                                <p class="mt-4">
+                                    No Anggota : {{ $pinjaman->anggota->no_anggota }}
+                                </p>
+                                <p class="mt-4">
+                                    Nama : {{ $pinjaman->anggota->nama }}
+                                </p>
+                                <p class="mt-4">
+                                    Besar Pinjaman : Rp {{ number_format($pinjaman->total_pinjaman, 2, ',', '.') }}
+                                </p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="mt-4">
+                                    No. Pinjaman : {{ $pinjaman->no_pinjaman }}
+                                </p>
+                                <p class="mt-4">
+                                    Tanggal Realisasi : {{ $pinjaman->tanggal_realisasi }}
+                                </p>
+                                <p class="mt-4">
+                                    Angsuran : Rp {{ number_format($angsuran->subtotal_angsuran, 2, ',', '.') }} x
+                                    {{ $pinjaman->angsuran }}
+                                </p>
                             </div>
                         </div>
                     </div>
-                @endforeach
+                </div>
             </div>
             <div class="table-responsive p-0">
                 <table class="table table-hover table-bordered align-items-center" id="myTable">
                     <thead style="font-size: 10pt">
                         <tr style="background-color: rgb(187, 246, 201)">
-                            <th class="text-center">No</th>
+                            <th class="text-center w-8">Angsuran Ke-</th>
                             <th class="text-center">Tanggal Jatuh Tempo</th>
-                            <th class="text-center">Angsuran Ke-</th>
                             <th class="text-center">Angsuran Pokok</th>
                             <th class="text-center">Bunga 1%</th>
-                            <th class="text-center">Angsuran Per-bulan</th>
                             <th class="text-center">Status</th>
-                            <th class="text-center">Transaksi</th>
                         </tr>
                     </thead>
                     <tbody class="text-center" style="font-size: 10pt">
@@ -83,8 +71,44 @@
                     <a href='{{ route('pinjaman') }}' class="btn btn-secondary">Kembali</a>
                 </div>
                 <div class="pb-2 mt-4">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#basicModal">Bayar
+                        Pinjaman</button>
+                    {{-- <a href="{{ route('pinjaman.edit', ['id' => $angsuran->id_pinjaman]) }}" class="btn btn-success">Bayar
+                        Pinjaman</a> --}}
                     <a href="{{ route('pinjaman.export', ['id' => $angsuran->id_pinjaman]) }}" class="btn btn-info">Cetak
                         Laporan</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="basicModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <form action="{{ route('pinjaman.update', $pinjaman->id_pinjaman) }}" method="POST"
+                        enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-header">
+                            <h5 class="modal-title">Bayar Pinjaman</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-start">
+                            <input type="hidden" class="form-control" id="id_anggota" name="id_anggota"
+                                value="{{ $pinjaman->anggota->id_anggota }}" required>
+                            <div class="mb-3 row">
+                                <label for="angsuran" class="col-sm-4 col-form-label">Angusan Pinjaman</label>
+                                <div class="col-sm-12">
+                                    <input type="number" class="form-control" id="angsuran" name="angsuran"
+                                        placeholder="Masukkan Angsuran" max="{{ $pinjaman->angsuran }}" min="1"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Bayar</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -123,16 +147,12 @@
                     dataSrc: 'data'
                 },
                 columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex'
+                        data: 'angsuran_ke_',
+                        name: 'angsuran_ke_'
                     },
                     {
                         data: 'tanggal_jatuh_tempo',
                         name: 'tanggal_jatuh_tempo'
-                    },
-                    {
-                        data: 'angsuran_ke_',
-                        name: 'angsuran_ke_'
                     },
                     {
                         data: 'angsuran_pokok',
@@ -155,35 +175,9 @@
                         }
                     },
                     {
-                        data: 'subtotal_angsuran',
-                        name: 'subtotal_angsuran',
-                        render: function(data) {
-                            return data !== null ? parseInt(data).toLocaleString('id-ID', {
-                                style: 'currency',
-                                currency: 'IDR'
-                            }) : '-';
-                        }
-                    },
-                    {
                         data: 'status_pelunasan',
                         name: 'status_pelunasan'
                     },
-                    {
-                        data: null,
-                        render: function(data) {
-                            var status_pelunasan = data.status_pelunasan == 'Lunas' ? 'disabled' :
-                                '';
-
-                            return '<div class="row justify-content-center">' +
-                                '<div class="col-auto">' +
-                                '<a href="{{ route('pinjaman.update', '') }}/' + data.id_pinjaman +
-                                '" style="font-size: 10pt" class="btn btn-info m-1 edit-btn" ' +
-                                'data-id="' + data.id +
-                                '" ' + status_pelunasan + '>Bayar</a>' +
-                                '</div>' +
-                                '</div>';
-                        }
-                    }
                 ],
                 rowCallback: function(row, data, index) {
                     var dt = this.api();

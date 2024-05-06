@@ -23,7 +23,7 @@ class DetailSimpanan extends Model
 
     public function history_transaksi()
     {
-        return $this->belongsTo(HistoryTransaksi::class, 'id_detail_simpanan', 'id_detail_simpanan');
+        return $this->hasMany(HistoryTransaksi::class, 'id_detail_simpanan', 'id_detail_simpanan');
     }
 
     public function users()

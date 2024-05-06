@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Anggota;
 use App\Models\DetailPinjaman;
+use App\Models\DetailSimpanan;
+use App\Models\HistoryTransaksi;
 use App\Models\Pinjaman;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
@@ -75,6 +77,11 @@ class PinjamanController extends Controller
                 $bunga = ceil($request->nominal_pinjaman * 0.01);
                 $subtotal_angsuran = ceil($angsuran_pokok + $bunga);
                 $sisa_lancar_angsuran = ceil($subtotal_angsuran * $request->angsuran);
+                $pendapatan = $this->hitungKas();
+
+                if ($request->nominal_pinjaman > $pendapatan) {
+                    throw new \Exception('Saldo koperasi tidak cukup untuk melanjutkan pengajuan pinjaman.');
+                }
 
                 $pinjaman = new Pinjaman();
                 $pinjaman->id_anggota = $request->id_anggota;
@@ -87,6 +94,15 @@ class PinjamanController extends Controller
 
                 if ($pinjaman->save()) {
                     $id_pinjaman = $pinjaman->id_pinjaman;
+
+                    $history = new HistoryTransaksi();
+                    $history->id_users = Auth::user()->id_users;
+                    $history->id_pinjaman = $id_pinjaman;
+                    $history->tipe_transaksi = 'Pengeluaran';
+
+                    if (!$history->save()) {
+                        throw new \Exception('Gagal menyimpan data history transaksi.');
+                    }
 
                     for ($i = 1; $i <= $request->angsuran; $i++) {
                         $detail_pinjaman = new DetailPinjaman();
@@ -120,7 +136,7 @@ class PinjamanController extends Controller
      */
     public function show(Request $request, string $id)
     {
-        $pinjaman = Pinjaman::where('id_pinjaman', $id)->with(['anggota', 'detail_pinjaman'])->get();
+        $pinjaman = Pinjaman::where('id_pinjaman', $id)->with(['anggota', 'detail_pinjaman'])->first();
         $detail_pinjaman = DetailPinjaman::where('id_pinjaman', $id)->with(['pinjaman', 'users'])->get();
         $rowData = [];
 
@@ -152,35 +168,7 @@ class PinjamanController extends Controller
      */
     public function edit(string $id)
     {
-        $pinjaman = Pinjaman::find($id);
-
-        if (!$pinjaman) {
-            return back()->with(['error' => 'Pinjaman tidak ditemukan. Silahkan coba kembali']);
-        }
-
-        $detail_pinjaman = DetailPinjaman::where('id_pinjaman', $id)
-            ->where('status_pelunasan', 'Belum Lunas')
-            ->orderBy('angsuran_ke_')
-            ->first();
-
-        if ($pinjaman->sisa_lancar_keseluruhan > 0.00) {
-            $pinjaman->sisa_lancar_keseluruhan -= $detail_pinjaman->subtotal_angsuran;
-        } else {
-            $pinjaman->status_pinjaman = 'Lunas';
-        }
-        if (!$pinjaman->update()) {
-            return back()->with(['error' => 'Gagal menyimpan pembayaran. Silahkan coba kembali']);
-        }
-        if (!$detail_pinjaman->status_pelunasan) {
-            return back()->with(['error' => 'Pinjaman sudah lunas']);
-        } else {
-            $detail_pinjaman->status_pelunasan = 'Lunas';
-        }
-
-        if (!$detail_pinjaman->update()) {
-            return back()->with(['error' => 'Gagal menyimpan pembayaran. Silahkan coba kembali']);
-        }
-        return back()->with(['success' => 'Pinjaman berhasil dibayar.']);
+        //
     }
 
     /**
@@ -188,6 +176,54 @@ class PinjamanController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $pinjaman = Pinjaman::find($id);
+
+        if (!$pinjaman) {
+            return back()->with(['error' => 'Pinjaman tidak ditemukan. Silahkan coba kembali']);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'angsuran' => 'required|numeric|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $angsuranDibayar = $request->input('angsuran');
+        $totalAngsuran = $pinjaman->detail_pinjaman->where('status_pelunasan', 'Belum Lunas')->count();
+
+        if ($angsuranDibayar > $totalAngsuran) {
+            return back()->with(['error' => 'Jumlah angsuran yang akan dibayar melebihi jumlah angsuran yang belum dilunasi']);
+        }
+
+        $detailPinjaman = $pinjaman->detail_pinjaman()->where('status_pelunasan', 'Belum Lunas')->orderBy('angsuran_ke_')->get();
+
+        foreach ($detailPinjaman as $index => $detail) {
+            if ($index < $angsuranDibayar) {
+                $detail->status_pelunasan = 'Lunas';
+                $detail->save();
+
+                $history = new HistoryTransaksi();
+                $history->id_users = Auth::user()->id_users;
+                $history->id_detail_pinjaman = $detail->id;
+                $history->tipe_transaksi = 'Pemasukan';
+                $history->save();
+            } else {
+                break;
+            }
+        }
+
+        $subtotal = $pinjaman->detail_pinjaman()->where('status_pelunasan', 'Lunas')->get();
+        $totalDibayar = $subtotal->sum('subtotal_angsuran');
+        $pinjaman->sisa_lancar_keseluruhan -= $totalDibayar;
+        $pinjaman->save();
+
+        $sisaAngsuran = $totalAngsuran - $angsuranDibayar;
+
+        return back()->with(['success' => 'Pelunasan berhasil. Sisa angsuran yang belum dilunasi kurang ' . $sisaAngsuran . 'X']);
     }
 
     /**
@@ -244,5 +280,32 @@ class PinjamanController extends Controller
         $memberNumber = 'P' . $dateString . $randomNumber;
 
         return $memberNumber;
+    }
+
+    private function hitungKas()
+    {
+        $setor = DetailSimpanan::where('jenis_transaksi', 'Setor')->get();
+        $simpanan_pokok = $setor->sum('simpanan_pokok');
+        $simpanan_wajib = $setor->sum('simpanan_wajib');
+        $simpanan_sukarela = $setor->sum('simpanan_sukarela');
+
+        $detail_pinjaman = DetailPinjaman::where('status_pelunasan', 'Lunas')->get();
+        $angsuran_pokok = $detail_pinjaman->sum('angsuran_pokok');
+
+        $pemasukan = $simpanan_pokok + $simpanan_wajib + $simpanan_sukarela + $angsuran_pokok;
+
+        $tarik = DetailSimpanan::where('jenis_transaksi', 'Tarik')->get();
+        $totalPenarikanPokok = $tarik->sum('simpanan_pokok');
+        $totalPenarikanWajib = $tarik->sum('simpanan_wajib');
+        $totalPenarikanSukarela = $tarik->sum('simpanan_sukarela');
+
+        $pinjaman = Pinjaman::where('tanggal_realisasi', '!=', null)->get();
+        $total_pinjaman = $pinjaman->sum('total_pinjaman');
+
+        $pengeluaran = $totalPenarikanPokok + $totalPenarikanWajib + $totalPenarikanSukarela + $total_pinjaman;
+
+        $pendapatan = abs($pemasukan - $pengeluaran);
+
+        return $pendapatan;
     }
 }

@@ -24,12 +24,10 @@
                     <thead style="font-size: 10pt">
                         <tr style="background-color: rgb(187, 246, 201)">
                             <th class="text-center">No</th>
-                            <th class="text-center">NIK</th>
-                            <th class="text-center">Nama</th>
-                            <th class="text-center">Jenis Kelamin</th>
-                            <th class="text-center">Alamat</th>
-                            <th class="text-center">No Handphone</th>
-                            <th class="text-center">Aksi</th>
+                            <th class="text-center">Nama Pengguna</th>
+                            <th class="text-center">Jenis Transaksi</th>
+                            <th class="text-center">Tanggal</th>
+                            <th class="text-center">Total Saldo</th>
                         </tr>
                     </thead>
                     <tbody class="text-center" style="font-size: 10pt">
@@ -52,43 +50,27 @@
                         name: 'DT_RowIndex'
                     },
                     {
-                        data: 'nik',
-                        name: 'nik'
+                        data: 'nama_pengguna',
+                        name: 'nama_pengguna'
                     },
                     {
-                        data: 'nama',
-                        name: 'nama'
+                        data: 'tipe_transaksi',
+                        name: 'tipe_transaksi'
                     },
                     {
-                        data: 'jenis_kelamin',
-                        name: 'jenis_kelamin'
+                        data: 'tanggal',
+                        name: 'tanggal'
                     },
                     {
-                        data: 'alamat',
-                        name: 'alamat'
-                    },
-                    {
-                        data: 'no_telp',
-                        name: 'no_telp'
-                    },
-                    {
-                        data: null,
+                        data: 'total_saldo',
+                        name: 'total_saldo',
                         render: function(data) {
-                            return '<div class="row justify-content-center">' +
-                                '<div class="col-auto">' +
-                                '<a href="{{ route('admin.pegawai.edit', '') }}/' + data.id_users +
-                                '" style="font-size: 10pt" class="btn btn-info m-1 edit-btn" ' +
-                                'data-id="' + data.id +
-                                '">Edit</a>' +
-                                '<a href="{{ route('admin.pegawai.destroy', '') }}/' + data
-                                .id_users +
-                                '" style="font-size: 10pt" class="btn btn-danger m-1 delete-btn" ' +
-                                'data-id="' + data.id +
-                                '">Hapus</a>' +
-                                '</div>' +
-                                '</div>';
+                            return parseInt(data).toLocaleString('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR'
+                            });
                         }
-                    }
+                    },
                 ],
                 rowCallback: function(row, data, index) {
                     var dt = this.api();

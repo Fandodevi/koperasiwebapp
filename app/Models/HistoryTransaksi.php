@@ -17,17 +17,17 @@ class HistoryTransaksi extends Model
 
     public function detail_simpanan()
     {
-        return $this->belongsTo(DetailSimpanan::class, 'id_detail_simpanan', 'id_detail_simpanan');
+        return $this->belongsTo(DetailSimpanan::class, 'id', 'id');
     }
 
     public function pinjaman()
     {
         return $this->belongsTo(Pinjaman::class, 'id_pinjaman', 'id_pinjaman');
     }
-    
+
     public function detail_pinjaman()
     {
-        return $this->belongsTo(DetailPinjaman::class, 'id_detail_pinjaman', 'id_detail_pinjaman');
+        return $this->belongsTo(DetailPinjaman::class, 'id', 'id');
     }
 
     public function users()

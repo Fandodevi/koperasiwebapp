@@ -1,14 +1,7 @@
 @extends('layouts.main')
 
-@section('subjudul')
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-white" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-white active" aria-current="page">Data Pinjaman</li>
-        </ol>
-        <h6 class="font-weight-bolder text-white mb-0">Data Pinjaman</h6>
-    </nav>
-@endsection
+@section('title', 'Pinjaman')
+@section('subtitle', 'Data Pinjaman')
 
 @section('content')
 
@@ -118,111 +111,6 @@
                             data: 'status_pinjaman',
                             name: 'status_pinjaman'
                         },
-                        // {
-                        //     data: null,
-                        //     render: function(data) {
-                        //         return '<div class="row justify-content-center">' +
-                        //             '<div class="col-auto">' +
-                        //             '<form action="{{ route('simpanan.update', '') }}/' + data
-                        //             .id_simpanan +
-                        //             '" method="POST" enctype="multipart/form-data">' +
-                        //             '@csrf' +
-                        //             '@method('PUT')' +
-                        //             '<button type="button" class="btn btn-primary m-1" data-bs-toggle="modal" data-bs-target="#tarikModal' +
-                        //             data.id_anggota +
-                        //             '">Setor</button>' +
-                        //             '<div class="modal fade" id="tarikModal' + data.id_anggota +
-                        //             '" tabindex="-1">' +
-                        //             '<div class="modal-dialog modal-lg">' +
-                        //             '<div class="modal-content">' +
-                        //             '<div class="modal-header">' +
-                        //             '<h5 class="modal-title">' + data.nama + '</h5>' +
-                        //             '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>' +
-                        //             '</div>' +
-                        //             '<div class="modal-body text-start">' +
-                        //             '<input type="hidden" class="form-control" id="jenis_transaksi" name="jenis_transaksi" value="Setor" required >' +
-                        //             '<input type="hidden" class="form-control" id="id_simpanan" name="id_simpanan" value="' +
-                        //             data.id_simpanan + '" required >' +
-                        //             '<input type="hidden" class="form-control" id="id_anggota" name="id_anggota" value="' +
-                        //             data.id_anggota + '" required >' +
-                        //             '<div class="mb-3 row">' +
-                        //             '<label for="jenis_simpanan" class="col-sm-2 col-form-label">Jenis Simpanan</label>' +
-                        //             '<div class="col-sm-12">' +
-                        //             '<select class="form-select cursor-pointer" aria-label="Default select example" id="jenis_simpanan" name="jenis_simpanan" >' +
-                        //             '<option value="" selected disabled>Pilih Jenis Simpanan</option>' +
-                        //             '<option value="Simpanan Pokok">Simpanan Pokok</option>' +
-                        //             '<option value="Simpanan Wajib">Simpanan Wajib</option>' +
-                        //             '<option value="Simpanan Sukarela">Simpanan Sukarela</option>' +
-                        //             '</select>' +
-                        //             '</div>' +
-                        //             '</div>' +
-                        //             '<div class="mb-3 row">' +
-                        //             '<label for="nominal" class="col-sm-2 col-form-label">Nominal</label>' +
-                        //             '<div class="col-sm-12">' +
-                        //             '<input type="text" class="form-control nominal" id="nominal" name="nominal" placeholder="Masukkan Nominal"  pattern="[0-9]*">' +
-                        //             '</div>' +
-                        //             '</div>' +
-                        //             '</div>' +
-                        //             '<div class="modal-footer">' +
-                        //             '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>' +
-                        //             '<button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Setor Simpanan</button>' +
-                        //             '</div>' +
-                        //             '</div>' +
-                        //             '</div>' +
-                        //             '</div>' +
-                        //             '</form>' +
-                        //             '</div>' +
-                        //             '<div class="col-auto">' +
-                        //             '<form action="{{ route('simpanan.update', '') }}/' + data
-                        //             .id_simpanan +
-                        //             '" method="POST" enctype="multipart/form-data">' +
-                        //             '@csrf' +
-                        //             '@method('PUT')' +
-                        //             '<button type="button" class="btn btn-info m-1" data-bs-toggle="modal" data-bs-target="#basicModal' +
-                        //             data.id_anggota +
-                        //             '">Tarik</button>' +
-                        //             '<div class="modal fade" id="basicModal' + data.id_anggota +
-                        //             '" tabindex="-1">' +
-                        //             '<div class="modal-dialog modal-lg">' +
-                        //             '<div class="modal-content">' +
-                        //             '<div class="modal-header">' +
-                        //             '<h5 class="modal-title">' + data.nama + '</h5>' +
-                        //             '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>' +
-                        //             '</div>' +
-                        //             '<div class="modal-body text-start">' +
-                        //             '<input type="hidden" class="form-control" id="jenis_transaksi" name="jenis_transaksi" value="Tarik" required >' +
-                        //             '<input type="hidden" class="form-control" id="id_simpanan" name="id_simpanan" value="' +
-                        //             data.id_simpanan + '" required >' +
-                        //             '<input type="hidden" class="form-control" id="id_anggota" name="id_anggota" value="' +
-                        //             data.id_anggota + '" required >' +
-                        //             '<div class="mb-3 row">' +
-                        //             '<label for="jenis_simpanan" class="col-sm-2 col-form-label">Jenis Simpanan</label>' +
-                        //             '<div class="col-sm-12">' +
-                        //             '<select class="form-select cursor-pointer" aria-label="Default select example" id="jenis_simpanan" name="jenis_simpanan" >' +
-                        //             '<option value="" disabled>Pilih Jenis Simpanan</option>' +
-                        //             '<option value="Simpanan Sukarela" selected>Simpanan Sukarela</option>' +
-                        //             '</select>' +
-                        //             '</div>' +
-                        //             '</div>' +
-                        //             '<div class="mb-3 row">' +
-                        //             '<label for="nominal" class="col-sm-2 col-form-label">Nominal</label>' +
-                        //             '<div class="col-sm-12">' +
-                        //             '<input type="text" class="form-control nominal" id="nominal" name="nominal" placeholder="Masukkan Nominal"  pattern="[0-9]*">' +
-                        //             '</div>' +
-                        //             '</div>' +
-                        //             '</div>' +
-                        //             '<div class="modal-footer">' +
-                        //             '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>' +
-                        //             '<button type="submit" class="btn btn-info" data-bs-dismiss="modal">Tarik Simpanan</button>' +
-                        //             '</div>' +
-                        //             '</div>' +
-                        //             '</div>' +
-                        //             '</div>' +
-                        //             '</form>' +
-                        //             '</div>' +
-                        //             '</div>';
-                        //     }
-                        // },
                         {
                             data: null,
                             render: function(data) {

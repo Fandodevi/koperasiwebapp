@@ -88,8 +88,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('kepala/pinjaman/add', [PinjamanController::class, 'create'])->name('pinjaman.create');
         Route::post('kepala/pinjaman/add', [PinjamanController::class, 'store'])->name('pinjaman.store');
         Route::get('kepala/pinjaman/view/{id}', [PinjamanController::class, 'show'])->name('pinjaman.show');
-        Route::get('kepala/pinjaman/edit/{id}', [PinjamanController::class, 'edit'])->name('pinjaman.edit');
-        Route::put('kepala/pinjaman/edit/{id}', [PinjamanController::class, 'update'])->name('pinjaman.update');
+        Route::put('kepala/pinjaman/view/{id}', [PinjamanController::class, 'update'])->name('pinjaman.update');
         Route::get('kepala/pinjaman/{id}', [PinjamanController::class, 'destroy'])->name('pinjaman.destroy');
         Route::get('kepala/pinjaman/export/pdf/{id}', [PinjamanController::class, 'export'])->name('pinjaman.export');
 
