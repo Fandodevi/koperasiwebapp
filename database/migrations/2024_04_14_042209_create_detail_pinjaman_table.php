@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('angsuran_pokok', 10, 2);
             $table->decimal('bunga', 10, 2);
             $table->decimal('subtotal_angsuran', 10, 2);
-            $table->timestamp('tanggal_jatuh_tempo')->notNull();
+            $table->timestamp('tanggal_jatuh_tempo')->notNull()->useCurrent();
             $table->enum('status_pelunasan', ['Belum Lunas', 'Lunas', 'Lewat Jatuh Tempo']);
             $table->timestamps();
         });

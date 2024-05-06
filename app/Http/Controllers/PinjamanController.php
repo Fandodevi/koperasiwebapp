@@ -142,6 +142,20 @@ class PinjamanController extends Controller
 
         if ($request->ajax()) {
             foreach ($detail_pinjaman as $row) {
+                if ($row->status_pelunasan == 'Belum Lunas') {
+                    if ($row->tanggal_jatuh_tempo < Carbon::now()) {
+                        $row->status_pelunasan = 'Lewat Jatuh Tempo';
+                        $row->save();
+                    }
+                }
+
+                if ($row->status_pelunasan == 'Lewat Jatuh Tempo') {
+                    if ($row->tanggal_jatuh_tempo > Carbon::now()) {
+                        $row->status_pelunasan = 'Belum Lunas';
+                        $row->save();
+                    }
+                }
+
                 $pinjaman = $row->pinjaman;
 
                 $rowData[] = [
