@@ -95,6 +95,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('kepala/laporan', [LaporanController::class, 'index'])->name('laporan');
 
         Route::get('kepala/rekap', [RekapTransaksiController::class, 'index'])->name('rekap');
+        Route::get('kepala/rekap/export/pdf', [RekapTransaksiController::class, 'export'])->name('rekap.export');
 
         Route::get('kepala/profile', [ProfileController::class, 'index'])->name('profile');
         Route::put('kepala/profile/{id}', [ProfileController::class, 'update'])->name('profile.update');
@@ -136,6 +137,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('laporan', [LaporanController::class, 'index'])->name('pegawai.laporan');
 
         Route::get('rekap', [RekapTransaksiController::class, 'index'])->name('pegawai.rekap');
+        Route::get('rekap/export/pdf', [RekapTransaksiController::class, 'export'])->name('pegawai.rekap.export');
 
         Route::get('profile', [ProfileController::class, 'index'])->name('pegawai.profile');
         Route::put('profile/{id}', [ProfileController::class, 'update'])->name('pegawai.profile.update');

@@ -7,6 +7,9 @@ use App\Models\DetailPinjaman;
 use App\Models\DetailSimpanan;
 use App\Models\HistoryTransaksi;
 use App\Models\Pinjaman;
+use Carbon\Carbon;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
@@ -103,5 +106,60 @@ class RekapTransaksiController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function export(Request $request)
+    {
+        $data = HistoryTransaksi::all();
+        if ($data) {
+            $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+            $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+
+            $rekapData = HistoryTransaksi::with('users', 'detail_simpanan', 'pinjaman', 'detail_pinjaman')->whereBetween('created_at', [$startDate, $endDate])->get();
+
+            $totalPemasukan = 0;
+            $totalPengeluaran = 0;
+            $saldo = [];
+
+            foreach ($rekapData as $item) {
+                if ($item->id_detail_simpanan != null) {
+                    $detail_simpanan = DetailSimpanan::find($item->id_detail_simpanan);
+                    $simpanan_pokok = $detail_simpanan->simpanan_pokok;
+                    $simpanan_wajib = $detail_simpanan->simpanan_wajib;
+                    $simpanan_sukarela = $detail_simpanan->simpanan_sukarela;
+                    $totalSaldo = $simpanan_pokok + $simpanan_wajib + $simpanan_sukarela;
+                } elseif ($item->id_pinjaman != null) {
+                    $pinjaman = Pinjaman::find($item->id_pinjaman);
+                    $totalSaldo = $pinjaman->total_pinjaman;
+                } else {
+                    $detail_pinjaman = DetailPinjaman::find($item->id_detail_pinjaman);
+                    $totalSaldo = $detail_pinjaman->angsuran_pokok;
+                }
+
+                if ($item->tipe_transaksi == 'Pemasukan') {
+                    $totalPemasukan += $totalSaldo;
+                } elseif ($item->tipe_transaksi == 'Pengeluaran') {
+                    $totalPengeluaran += $totalSaldo;
+                }
+                $saldo[] = $totalSaldo;
+            }
+            
+            $pendapatan = abs($totalPemasukan - $totalPengeluaran);
+
+            $html = view('pages.report.rekap', compact('rekapData', 'totalPemasukan', 'totalPengeluaran', 'pendapatan', 'saldo'))->render();
+
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            $dompdf->stream('Rekap Transaksi.pdf');
+        } else {
+            return back()->withErrors(['error' => 'Data Rekap Transaksi masih kosong. Silahkan coba kembali.']);
+        }
     }
 }

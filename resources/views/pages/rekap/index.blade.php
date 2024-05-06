@@ -9,12 +9,20 @@
             <!-- TOMBOL TAMBAH DATA -->
             <div class="d-flex justify-content-between">
                 <div class="pb-2">
-                    @if (Auth::user()->id_role == 1)
-                        <a href='{{ route('admin.pegawai.export') }}' class="btn btn-secondary">Cetak PDF</a>
-                    @elseif (Auth::user()->id_role == 2)
-                        <a href='{{ route('pegawai.export') }}' class="btn btn-secondary">Cetak PDF</a>
-                    @else
-                        <a href='{{ route('pegawai.pegawai.export') }}' class="btn btn-secondary">Cetak PDF</a>
+                    @if (Auth::user()->id_role == 2)
+                        <form action="{{ route('rekap.export') }}" method="GET" class="form-control">
+                            <span class="d-flex -mb-4">
+                                <h5>Pilih Rentang Waktu :</h5>
+                            </span>
+                            @csrf
+                            <div class="col d-flex justify-content-start align-items-center">
+                                <input type="date" name="start_date" class="form-control h-50 me-2 mb-2" required>
+                                <input type="date" name="end_date" class="form-control h-50 me-2 mb-2" required>
+                                <button type="submit" class="btn btn-secondary">Cetak</button>
+                            </div>
+                        </form>
+                    @elseif (Auth::user()->id_role == 3)
+                        <a href='{{ route('pegawai.rekap.export') }}' class="btn btn-secondary">Cetak PDF</a>
                     @endif
                 </div>
             </div>
