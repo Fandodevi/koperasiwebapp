@@ -10,6 +10,7 @@ use App\Models\Pinjaman;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -190,12 +191,6 @@ class PinjamanController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $pinjaman = Pinjaman::find($id);
-
-        if (!$pinjaman) {
-            return back()->with(['error' => 'Pinjaman tidak ditemukan. Silahkan coba kembali']);
-        }
-
         $validator = Validator::make($request->all(), [
             'angsuran' => 'required|numeric|min:1',
         ]);
@@ -206,39 +201,65 @@ class PinjamanController extends Controller
                 ->withInput();
         }
 
-        $angsuranDibayar = $request->input('angsuran');
-        $totalAngsuran = $pinjaman->detail_pinjaman->where('status_pelunasan', 'Belum Lunas')->count();
 
-        if ($angsuranDibayar > $totalAngsuran) {
-            return back()->with(['error' => 'Jumlah angsuran yang akan dibayar melebihi jumlah angsuran yang belum dilunasi']);
+        try {
+            DB::transaction(function () use ($request, $id) {
+                $pinjaman = Pinjaman::findOrFail($id);
+
+                if (!$pinjaman) {
+                    throw new \Exception('Pinjaman tidak ditemukan. Silahkan coba kembali');
+                }
+
+                $angsuranDibayar = $request->input('angsuran');
+                $totalAngsuran = $pinjaman->detail_pinjaman()->where('status_pelunasan', 'Belum Lunas')->count();
+
+                if ($angsuranDibayar > $totalAngsuran) {
+                    throw new \Exception('Jumlah angsuran yang akan dibayar melebihi jumlah angsuran yang belum dilunasi');
+                }
+
+                $detailPinjaman = $pinjaman->detail_pinjaman()->where('status_pelunasan', 'Belum Lunas')->orderBy('angsuran_ke_')->get();
+
+                foreach ($detailPinjaman as $index => $detail) {
+                    if ($index < $angsuranDibayar) {
+                        $detail->status_pelunasan = 'Lunas';
+
+                        if (!$detail->save()) {
+                            throw new \Exception('Gagal menyimpan status pelunasan');
+                        }
+
+                        $history = new HistoryTransaksi();
+                        $history->id_users = Auth::user()->id_users;
+                        $history->id_detail_pinjaman = $detail->id;
+                        $history->tipe_transaksi = 'Pemasukan';
+
+                        if (!$history->save()) {
+                            throw new \Exception('Gagal menyimpan history transaksi');
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
+                $subtotal_angsuran = $pinjaman->detail_pinjaman()->where('status_pelunasan', 'Lunas')->first();
+
+                if ($subtotal_angsuran) {
+                    $totalDibayar = $subtotal_angsuran->subtotal_angsuran * $angsuranDibayar;
+                    $pinjaman->sisa_lancar_keseluruhan -= $totalDibayar;
+                    $pinjaman->save();
+                } else {
+                    throw new \Exception('Gagal memperbarui status pinjaman');
+                }
+            });
+
+            $pinjaman = Pinjaman::findOrFail($id);
+            $sisaAngsuran = $pinjaman->detail_pinjaman()->where('status_pelunasan', 'Belum Lunas')->count();
+
+            return back()->with(['success' => 'Pelunasan berhasil. Sisa angsuran yang belum dilunasi kurang ' . $sisaAngsuran . 'X']);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
         }
-
-        $detailPinjaman = $pinjaman->detail_pinjaman()->where('status_pelunasan', 'Belum Lunas')->orderBy('angsuran_ke_')->get();
-
-        foreach ($detailPinjaman as $index => $detail) {
-            if ($index < $angsuranDibayar) {
-                $detail->status_pelunasan = 'Lunas';
-                $detail->save();
-
-                $history = new HistoryTransaksi();
-                $history->id_users = Auth::user()->id_users;
-                $history->id_detail_pinjaman = $detail->id;
-                $history->tipe_transaksi = 'Pemasukan';
-                $history->save();
-            } else {
-                break;
-            }
-        }
-
-        $subtotal = $pinjaman->detail_pinjaman()->where('status_pelunasan', 'Lunas')->get();
-        $totalDibayar = $subtotal->sum('subtotal_angsuran');
-        $pinjaman->sisa_lancar_keseluruhan -= $totalDibayar;
-        $pinjaman->save();
-
-        $sisaAngsuran = $totalAngsuran - $angsuranDibayar;
-
-        return back()->with(['success' => 'Pelunasan berhasil. Sisa angsuran yang belum dilunasi kurang ' . $sisaAngsuran . 'X']);
     }
+
 
     /**
      * Remove the specified resource from storage.
