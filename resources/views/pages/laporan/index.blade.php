@@ -73,7 +73,7 @@
                                     <label for="jumlah_uang" class="col-sm-4 col-form-label">Jumlah Uang</label>
                                     <div class="col-sm-12">
                                         <input type="text" class="form-control" id="jumlah_uang" name="jumlah_uang"
-                                            value="" required>
+                                            placeholder="Masukkan Jumlah Uang" value="" required>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">

@@ -151,7 +151,7 @@ class LaporanController extends Controller
             $beban_operasional = $laporan->where('klasifikasi', 'Beban Operasional');
             $total_beban_operasional = $beban_operasional->sum('jumlah_uang');
 
-            $sisa_hasil_usaha = abs($total_pendapatan_bunga - $total_beban_operasional);
+            $sisa_hasil_usaha = $total_pendapatan_bunga - $total_beban_operasional;
 
             $html = view('pages.report.laporan', compact('beban_operasional', 'tahun', 'tanggal_cetak', 'total_pendapatan_bunga', 'total_beban_operasional', 'sisa_hasil_usaha'))->render();
 
