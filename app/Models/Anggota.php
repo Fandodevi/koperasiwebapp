@@ -35,4 +35,9 @@ class Anggota extends Model
     {
         return $this->pinjaman()->exists();
     }
+
+    public function history_transaksi()
+    {
+        return $this->hasMany(HistoryTransaksi::class, 'id_anggota', 'id_anggota');
+    }
 }

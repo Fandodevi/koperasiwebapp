@@ -34,4 +34,9 @@ class HistoryTransaksi extends Model
     {
         return $this->belongsTo(User::class, 'id_users', 'id_users');
     }
+    
+    public function anggota()
+    {
+        return $this->belongsTo(Anggota::class, 'id_anggota', 'id_anggota');
+    }
 }

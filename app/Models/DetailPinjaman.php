@@ -20,10 +20,15 @@ class DetailPinjaman extends Model
     {
         return $this->belongsTo(Pinjaman::class, 'id_pinjaman', 'id_pinjaman');
     }
-    
+
     public function history_transaksi()
     {
         return $this->hasMany(HistoryTransaksi::class, 'id_detail_pinjaman', 'id_detail_pinjaman');
+    }
+
+    public function laporan()
+    {
+        return $this->hasMany(Laporan::class, 'id_detail_pinjaman', 'id_detail_pinjaman');
     }
 
     public function users()

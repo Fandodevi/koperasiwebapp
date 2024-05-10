@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('history_transaksi', function (Blueprint $table) {
             $table->unsignedBigInteger('id_users')->required();
             $table->foreign('id_users')->references('id_users')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->unsignedBigInteger('id_anggota')->required();
+            $table->foreign('id_anggota')->references('id_anggota')->on('anggota')->onDelete('cascade')->onUpdate('cascade');
             $table->unsignedBigInteger('id_detail_simpanan')->nullable();
             $table->foreign('id_detail_simpanan')->references('id')->on('detail_simpanan')->onDelete('cascade')->onUpdate('cascade');
             $table->unsignedBigInteger('id_pinjaman')->nullable();

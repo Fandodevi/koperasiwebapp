@@ -73,8 +73,6 @@
                 <div class="pb-2 mt-4">
                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#basicModal">Bayar
                         Pinjaman</button>
-                    {{-- <a href="{{ route('pinjaman.edit', ['id' => $angsuran->id_pinjaman]) }}" class="btn btn-success">Bayar
-                        Pinjaman</a> --}}
                     <a href="{{ route('pinjaman.export', ['id' => $angsuran->id_pinjaman]) }}" class="btn btn-info">Cetak
                         Laporan</a>
                 </div>

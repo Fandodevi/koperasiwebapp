@@ -6,6 +6,7 @@ use App\Models\Anggota;
 use App\Models\DetailPinjaman;
 use App\Models\DetailSimpanan;
 use App\Models\HistoryTransaksi;
+use App\Models\Laporan;
 use App\Models\Pinjaman;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
@@ -98,6 +99,7 @@ class PinjamanController extends Controller
 
                     $history = new HistoryTransaksi();
                     $history->id_users = Auth::user()->id_users;
+                    $history->id_anggota = $request->id_anggota;
                     $history->id_pinjaman = $id_pinjaman;
                     $history->tipe_transaksi = 'Pengeluaran';
 
@@ -229,11 +231,22 @@ class PinjamanController extends Controller
 
                         $history = new HistoryTransaksi();
                         $history->id_users = Auth::user()->id_users;
+                        $history->id_anggota = $pinjaman->id_anggota;
                         $history->id_detail_pinjaman = $detail->id;
                         $history->tipe_transaksi = 'Pemasukan';
 
                         if (!$history->save()) {
                             throw new \Exception('Gagal menyimpan history transaksi');
+                        }
+
+                        $laporan = new Laporan();
+                        $laporan->id_detail_pinjaman = $detail->id;
+                        $laporan->keterangan = 'Pendapatan Bunga';
+                        $laporan->klasifikasi = 'Pendapatan';
+                        $laporan->jumlah_uang = $detail->bunga;
+
+                        if (!$laporan->save()) {
+                            throw new \Exception('Gagal menyimpan laporan');
                         }
                     } else {
                         break;

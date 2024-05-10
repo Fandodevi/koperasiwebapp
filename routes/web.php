@@ -93,6 +93,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('kepala/pinjaman/export/pdf/{id}', [PinjamanController::class, 'export'])->name('pinjaman.export');
 
         Route::get('kepala/laporan', [LaporanController::class, 'index'])->name('laporan');
+        Route::post('kepala/laporan/add', [LaporanController::class, 'store'])->name('laporan.store');
+        Route::put('kepala/laporan/update', [LaporanController::class, 'update'])->name('laporan.update');
+        Route::get('kepala/laporan/{id}', [LaporanController::class, 'destroy'])->name('laporan.destroy');
+        Route::get('kepala/laporan/export/pdf', [LaporanController::class, 'export'])->name('laporan.export');
 
         Route::get('kepala/rekap', [RekapTransaksiController::class, 'index'])->name('rekap');
         Route::get('kepala/rekap/export/pdf', [RekapTransaksiController::class, 'export'])->name('rekap.export');
@@ -135,6 +139,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('pinjaman/{id}', [PinjamanController::class, 'destroy'])->name('pegawai.pinjaman.destroy');
 
         Route::get('laporan', [LaporanController::class, 'index'])->name('pegawai.laporan');
+        Route::get('laporan/export/pdf', [LaporanController::class, 'export'])->name('pegawai.laporan.export');
 
         Route::get('rekap', [RekapTransaksiController::class, 'index'])->name('pegawai.rekap');
         Route::get('rekap/export/pdf', [RekapTransaksiController::class, 'export'])->name('pegawai.rekap.export');

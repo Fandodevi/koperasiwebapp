@@ -20,35 +20,87 @@ class RekapTransaksiController extends Controller
      */
     public function index(Request $request)
     {
-        $rekap = HistoryTransaksi::with('users', 'detail_simpanan', 'pinjaman', 'detail_pinjaman')->orderBy('created_at', 'desc')->get();
+        $rekap = HistoryTransaksi::with('users', 'anggota', 'detail_simpanan', 'pinjaman', 'detail_pinjaman')->orderBy('created_at', 'desc')->get();
+
+        $jumlahMasuk = 0.00;
+        $jumlahKeluar = 0.00;
+        $totalPemasukan = 0.00;
+        $totalPengeluaran = 0.00;
+
+        foreach ($rekap as $item) {
+            if ($item->id_detail_simpanan != null) {
+                $detail_simpanan = DetailSimpanan::find($item->id_detail_simpanan);
+                $simpanan_pokok = $detail_simpanan->simpanan_pokok;
+                $simpanan_wajib = $detail_simpanan->simpanan_wajib;
+                $simpanan_sukarela = $detail_simpanan->simpanan_sukarela;
+                if ($item->tipe_transaksi == 'Pemasukan') {
+                    $jenis_transaksi = 'Setor Simpanan';
+                    $jumlahMasuk = $simpanan_pokok + $simpanan_wajib + $simpanan_sukarela;
+                    $totalPemasukan += $jumlahMasuk;
+                } else {
+                    $jenis_transaksi = 'Tarik Simpanan';
+                    $jumlahKeluar = $simpanan_pokok + $simpanan_wajib + $simpanan_sukarela;
+                    $totalPengeluaran += $jumlahKeluar;
+                }
+            } elseif ($item->id_pinjaman != null) {
+                $pinjaman = Pinjaman::find($item->id_pinjaman);
+                $jumlahKeluar = $pinjaman->total_pinjaman;
+                $totalPengeluaran += $jumlahKeluar;
+                $jenis_transaksi = 'Pengajuan Pinjaman';
+            } else {
+                $detail_pinjaman = DetailPinjaman::find($item->id_detail_pinjaman);
+                $jumlahMasuk = $detail_pinjaman->angsuran_pokok;
+                $totalPemasukan += $jumlahMasuk;
+                $jenis_transaksi = 'Angsuran Pinjaman';
+            }
+        }
+
+        $pendapatan = abs($totalPemasukan - $totalPengeluaran);
 
         if ($request->ajax()) {
             $rowData = [];
             $iteration = 1;
 
             foreach ($rekap as $item) {
-                $totalSaldo = 0.00;
+                $jumlahMasuk = 0.00;
+                $jumlahKeluar = 0.00;
+                $totalPemasukan = 0.00;
+                $totalPengeluaran = 0.00;
 
                 if ($item->id_detail_simpanan != null) {
                     $detail_simpanan = DetailSimpanan::find($item->id_detail_simpanan);
                     $simpanan_pokok = $detail_simpanan->simpanan_pokok;
                     $simpanan_wajib = $detail_simpanan->simpanan_wajib;
                     $simpanan_sukarela = $detail_simpanan->simpanan_sukarela;
-                    $totalSaldo = $simpanan_pokok + $simpanan_wajib + $simpanan_sukarela;
+                    if ($item->tipe_transaksi == 'Pemasukan') {
+                        $jenis_transaksi = 'Setor Simpanan';
+                        $jumlahMasuk = $simpanan_pokok + $simpanan_wajib + $simpanan_sukarela;
+                        $totalPemasukan += $jumlahMasuk;
+                    } else {
+                        $jenis_transaksi = 'Tarik Simpanan';
+                        $jumlahKeluar = $simpanan_pokok + $simpanan_wajib + $simpanan_sukarela;
+                        $totalPengeluaran += $jumlahKeluar;
+                    }
                 } elseif ($item->id_pinjaman != null) {
                     $pinjaman = Pinjaman::find($item->id_pinjaman);
-                    $totalSaldo = $pinjaman->total_pinjaman;
+                    $jumlahKeluar = $pinjaman->total_pinjaman;
+                    $totalPengeluaran += $jumlahKeluar;
+                    $jenis_transaksi = 'Pengajuan Pinjaman';
                 } else {
                     $detail_pinjaman = DetailPinjaman::find($item->id_detail_pinjaman);
-                    $totalSaldo = $detail_pinjaman->angsuran_pokok;
+                    $jumlahMasuk = $detail_pinjaman->angsuran_pokok;
+                    $totalPemasukan += $jumlahMasuk;
+                    $jenis_transaksi = 'Angsuran Pinjaman';
                 }
 
                 $rowData[] = [
                     'DT_RowIndex' => $iteration,
                     'nama_pengguna' => $item->users->nama,
-                    'tipe_transaksi' => $item->tipe_transaksi,
+                    'anggota' => $item->anggota->nama,
+                    'jenis_transaksi' => $jenis_transaksi,
                     'tanggal' => $item->created_at->format('d-m-Y h:i:s'),
-                    'total_saldo' => $totalSaldo,
+                    'jumlah_masuk' => $jumlahMasuk,
+                    'jumlah_keluar' => $jumlahKeluar,
                 ];
 
                 $iteration++;
@@ -57,7 +109,7 @@ class RekapTransaksiController extends Controller
             return DataTables::of($rowData)->toJson();
         }
 
-        return view('pages.rekap.index');
+        return view('pages.rekap.index', ['pendapatan' => $pendapatan, 'totalPemasukan' => $totalPemasukan, 'totalPengeluaran' => $totalPengeluaran]);
     }
 
     /**
@@ -114,39 +166,58 @@ class RekapTransaksiController extends Controller
         if ($data) {
             $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
             $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+            $tahun = Carbon::now()->format('Y');
 
-            $rekapData = HistoryTransaksi::with('users', 'detail_simpanan', 'pinjaman', 'detail_pinjaman')->whereBetween('created_at', [$startDate, $endDate])->get();
+            $rekapData = HistoryTransaksi::with('users', 'detail_simpanan', 'pinjaman', 'detail_pinjaman')->whereBetween('created_at', [$startDate, $endDate])->orderBy('created_at', 'desc')->get();
 
-            $totalPemasukan = 0;
-            $totalPengeluaran = 0;
-            $saldo = [];
+            $jumlahMasuk = 0.00;
+            $jumlahKeluar = 0.00;
+            $totalPemasukan = 0.00;
+            $totalPengeluaran = 0.00;
+            $jumlah_masuk = [];
+            $jumlah_keluar = [];
 
             foreach ($rekapData as $item) {
-                if ($item->id_detail_simpanan != null) {
+                if ($item->id_detail_simpanan !== null) {
                     $detail_simpanan = DetailSimpanan::find($item->id_detail_simpanan);
                     $simpanan_pokok = $detail_simpanan->simpanan_pokok;
                     $simpanan_wajib = $detail_simpanan->simpanan_wajib;
                     $simpanan_sukarela = $detail_simpanan->simpanan_sukarela;
-                    $totalSaldo = $simpanan_pokok + $simpanan_wajib + $simpanan_sukarela;
-                } elseif ($item->id_pinjaman != null) {
+                    if ($item->tipe_transaksi == 'Pemasukan') {
+                        $jenis_transaksi = 'Setor Simpanan';
+                        $jumlahMasuk = $simpanan_pokok + $simpanan_wajib + $simpanan_sukarela;
+                        $totalPemasukan += $jumlahMasuk;
+                    } else {
+                        $jenis_transaksi = 'Tarik Simpanan';
+                        $jumlahKeluar = $simpanan_pokok + $simpanan_wajib + $simpanan_sukarela;
+                        $totalPengeluaran += $jumlahKeluar;
+                    }
+                } elseif ($item->id_pinjaman !== null) {
                     $pinjaman = Pinjaman::find($item->id_pinjaman);
-                    $totalSaldo = $pinjaman->total_pinjaman;
+                    if (!$pinjaman) {
+                        $jumlah_keluar = 0.00;
+                    } else {
+                        $jumlahKeluar = $pinjaman->total_pinjaman;
+                    }
+                    $totalPengeluaran += $jumlahKeluar;
+                    $jenis_transaksi = 'Pengajuan Pinjaman';
                 } else {
                     $detail_pinjaman = DetailPinjaman::find($item->id_detail_pinjaman);
-                    $totalSaldo = $detail_pinjaman->angsuran_pokok;
+                    if (!$detail_pinjaman) {
+                        $jumlahMasuk = 0.00;
+                    } else {
+                        $jumlahMasuk = $detail_pinjaman->angsuran_pokok;
+                    }
+                    $totalPemasukan += $jumlahMasuk;
+                    $jenis_transaksi = 'Angsuran Pinjaman';
                 }
-
-                if ($item->tipe_transaksi == 'Pemasukan') {
-                    $totalPemasukan += $totalSaldo;
-                } elseif ($item->tipe_transaksi == 'Pengeluaran') {
-                    $totalPengeluaran += $totalSaldo;
-                }
-                $saldo[] = $totalSaldo;
+                $jumlah_masuk[] = $jumlahMasuk;
+                $jumlah_keluar[] = $jumlahKeluar;
             }
-            
+
             $pendapatan = abs($totalPemasukan - $totalPengeluaran);
 
-            $html = view('pages.report.rekap', compact('rekapData', 'totalPemasukan', 'totalPengeluaran', 'pendapatan', 'saldo'))->render();
+            $html = view('pages.report.rekap', ['rekapData' => $rekapData, 'pendapatan' => $pendapatan, 'totalPemasukan' => $totalPemasukan, 'totalPengeluaran' => $totalPengeluaran, 'tahun' => $tahun, 'jenis_transaksi' => $jenis_transaksi, 'jumlah_masuk' => $jumlah_masuk, 'jumlah_keluar' => $jumlah_keluar])->render();
 
             $options = new Options();
             $options->set('isHtml5ParserEnabled', true);

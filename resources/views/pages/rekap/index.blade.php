@@ -6,24 +6,45 @@
 @section('content')
     <main class="container">
         <div class="my-3 p-3 bg-body rounded shadow-sm">
-            <!-- TOMBOL TAMBAH DATA -->
-            <div class="d-flex justify-content-between">
-                <div class="pb-2">
-                    @if (Auth::user()->id_role == 2)
-                        <form action="{{ route('rekap.export') }}" method="GET" class="form-control">
-                            <span class="d-flex -mb-4">
-                                <h5>Pilih Rentang Waktu :</h5>
-                            </span>
-                            @csrf
-                            <div class="col d-flex justify-content-start align-items-center">
-                                <input type="date" name="start_date" class="form-control h-50 me-2 mb-2" required>
-                                <input type="date" name="end_date" class="form-control h-50 me-2 mb-2" required>
-                                <button type="submit" class="btn btn-secondary">Cetak</button>
+            <div class="d-flex align-items-end row">
+                <div class="col-sm-12">
+                    <div class="card-body">
+                        <div class="row d-flex justify-content-between">
+                            <div class="col-md-6">
+                                <p>
+                                    Pendapatan : Rp {{ number_format($pendapatan, 2, ',', '.') }}
+                                </p>
+                                <p class="mt-4">
+                                    Pemasukan : Rp {{ number_format($totalPemasukan, 2, ',', '.') }}
+                                </p>
+                                <p class="mt-4">
+                                    Pengeluaran : Rp {{ number_format($totalPengeluaran, 2, ',', '.') }}
+                                </p>
                             </div>
-                        </form>
-                    @elseif (Auth::user()->id_role == 3)
-                        <a href='{{ route('pegawai.rekap.export') }}' class="btn btn-secondary">Cetak PDF</a>
-                    @endif
+                            <div class="col-md-4">
+                                <div class="pb-2 mt-3">
+                                    @if (Auth::user()->id_role == 2)
+                                        <form action="{{ route('rekap.export') }}" method="GET" class="form-control">
+                                            <span class="d-flex -mb-4">
+                                                <h5>Pilih Rentang Waktu :</h5>
+                                            </span>
+                                            @csrf
+                                            <div class="col d-flex justify-content-start align-items-center">
+                                                <input type="date" name="start_date" class="form-control h-50 me-2 mb-2"
+                                                    required>
+                                                <input type="date" name="end_date" class="form-control h-50 me-2 mb-2"
+                                                    required>
+                                                <button type="submit" class="btn btn-secondary">Cetak</button>
+                                            </div>
+                                        </form>
+                                    @elseif (Auth::user()->id_role == 3)
+                                        <a href='{{ route('pegawai.rekap.export') }}' class="btn btn-secondary">Cetak
+                                            PDF</a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -33,9 +54,11 @@
                         <tr style="background-color: rgb(187, 246, 201)">
                             <th class="text-center">No</th>
                             <th class="text-center">Nama Pengguna</th>
+                            <th class="text-center">Anggota</th>
                             <th class="text-center">Jenis Transaksi</th>
                             <th class="text-center">Tanggal</th>
-                            <th class="text-center">Total Saldo</th>
+                            <th class="text-center">Jumlah Masuk</th>
+                            <th class="text-center">Jumlah Keluar</th>
                         </tr>
                     </thead>
                     <tbody class="text-center" style="font-size: 10pt">
@@ -62,21 +85,35 @@
                         name: 'nama_pengguna'
                     },
                     {
-                        data: 'tipe_transaksi',
-                        name: 'tipe_transaksi'
+                        data: 'anggota',
+                        name: 'anggota'
+                    },
+                    {
+                        data: 'jenis_transaksi',
+                        name: 'jenis_transaksi'
                     },
                     {
                         data: 'tanggal',
                         name: 'tanggal'
                     },
                     {
-                        data: 'total_saldo',
-                        name: 'total_saldo',
+                        data: 'jumlah_masuk',
+                        name: 'jumlah_masuk',
                         render: function(data) {
-                            return parseInt(data).toLocaleString('id-ID', {
+                            return data !== null ? parseInt(data).toLocaleString('id-ID', {
                                 style: 'currency',
                                 currency: 'IDR'
-                            });
+                            }) : '-';
+                        }
+                    },
+                    {
+                        data: 'jumlah_keluar',
+                        name: 'jumlah_keluar',
+                        render: function(data) {
+                            return data !== null ? parseInt(data).toLocaleString('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR'
+                            }) : '-';
                         }
                     },
                 ],

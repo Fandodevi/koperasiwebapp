@@ -1,4 +1,4 @@
-<div class="min-height-300 bg-success position-absolute w-100"></div>
+<div class="min-height-500 bg-success position-absolute w-100"></div>
 <aside
     class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 me-4"
     id="sidenav-main">

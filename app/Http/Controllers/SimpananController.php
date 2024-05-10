@@ -116,6 +116,7 @@ class SimpananController extends Controller
 
                     $history = new HistoryTransaksi();
                     $history->id_users = Auth::user()->id_users;
+                    $history->id_anggota = $request->id_anggota;
                     $history->id_detail_simpanan = $detail_simpanan->id;
                     $history->tipe_transaksi = 'Pemasukan';
 
@@ -431,6 +432,7 @@ class SimpananController extends Controller
 
                     $history = new HistoryTransaksi();
                     $history->id_users = Auth::user()->id_users;
+                    $history->id_anggota = $request->id_anggota;
                     $history->id_detail_simpanan = $detail_simpanan->id;
                     if ($jenisTransaksi == 'Setor') {
                         $history->tipe_transaksi = 'Pemasukan';

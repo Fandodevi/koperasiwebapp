@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<html>
 
 <head>
     <meta charset="UTF-8">
@@ -65,6 +64,7 @@
         .content .ttd {
             width: 100%;
             border: none;
+            margin-top: 20px;
             margin-bottom: 20px;
         }
 
@@ -88,49 +88,62 @@
     </div>
 
     <div class="content">
-        <h3>REKAP TRANSAKSI {{ $tahun }}</h3>
+        <h3>LABA/RUGI {{ $tahun }}</h3>
         <h3>KSP BANGUN KARYA DESA</h3>
-        <table class="table" style="border: none">
-            <tbody style="border: none">
-                <tr>
-                    <td style="border: none">Pendapatan</td>
-                    <td style="width: 70%; border: none; text-align: left">: Rp
-                        {{ number_format($pendapatan, 2, ',', '.') }}</td>
-                </tr>
-                <tr>
-                    <td style="border: none">Pemasukan</td>
-                    <td style="width: 70%; border: none; text-align: left">: Rp
-                        {{ number_format($totalPemasukan, 2, ',', '.') }}</td>
-                </tr>
-                <tr>
-                    <td style="border: none">Pengeluaran</td>
-                    <td style="width: 70%; border: none; text-align: left">: Rp
-                        {{ number_format($totalPengeluaran, 2, ',', '.') }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <table class="table" style="margin-bottom: 20px; font-size: x-small;">
+        <table class="table">
             <thead>
                 <tr>
-                    <th>Nama Pengguna</th>
-                    <th>Anggota</th>
-                    <th>Jenis Transaksi</th>
-                    <th>Tanggal</th>
-                    <th>Jumlah Masuk</th>
-                    <th>Jumlah Keluar</th>
+                    <th>Uraian</th>
+                    <th>{{ $tanggal_cetak }}</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($rekapData as $index => $item)
+                <tr>
+                    <td><b>I. Pendapatan</b></td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td>Pendapatan Bunga</td>
+                    <td class="jumlah">Rp. {{ number_format($total_pendapatan_bunga, 2, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td><b>SHU Kotor</b></td>
+                    <td class="jumlah">Rp. {{ number_format($total_pendapatan_bunga, 2, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td><b>II. Beban Operasional</b></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Beban Usaha</td>
+                    <td></td>
+                </tr>
+                @foreach ($beban_operasional as $item)
                     <tr>
-                        <td>{{ $item->users->nama }}</td>
-                        <td>{{ $item->anggota->nama }}</td>
-                        <td>{{ $item->tipe_transaksi }}</td>
-                        <td>{{ $item->created_at->format('d-m-Y') }}</td>
-                        <td>Rp {{ number_format($jumlah_masuk[$index], 2, ',', '.') }}</td>
-                        <td>Rp {{ number_format($jumlah_keluar[$index], 2, ',', '.') }}</td>
+                        <td>- Beban {{ $item->keterangan }}</td>
+                        <td class="jumlah">Rp. {{ number_format($item->jumlah_uang, 2, ',', '.') }}</td>
                     </tr>
                 @endforeach
+                <tr>
+                    <td><b>Total Beban Operasional</b></td>
+                    <td class="jumlah">Rp. {{ number_format($total_beban_operasional, 2, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td><b>III. Sisa Hasil Usaha</b></td>
+                    <td class="jumlah">Rp. {{ number_format($sisa_hasil_usaha, 2, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                </tr>
             </tbody>
         </table>
         <table class="ttd">
@@ -155,6 +168,7 @@
             </tbody>
         </table>
     </div>
+
 </body>
 
 </html>
