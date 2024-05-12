@@ -19,7 +19,7 @@
                         @csrf
                         @method('PUT')
         @endif
-        <div class="my-3 p-3 bg-body rounded shadow-sm">
+        <div class="row my-3 p-3 bg-body rounded shadow-sm">
             {!! session('msg') !!}
             @if ($errors->any())
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -32,79 +32,80 @@
                     </button>
                 </div>
             @endif
-            <div class="mb-3 row">
-                <label for="nik" class="col-sm-2 col-form-label">NIK</label>
-                <div class="col-sm-12">
-                    <input type="text" class="form-control" id="nik" name='nik' value="{{ $users->nik }}"
-                        placeholder="Masukkan NIK" required>
-                </div>
+            <div class="col-md-6 mb-3 ">
+                <label for="nik" class="col-md-6 col-form-label">NIK</label>
+                <input type="text" class="form-control" id="nik" name='nik' value="{{ $users->nik }}"
+                    placeholder="Masukkan NIK" required>
             </div>
 
-            <div class="mb-3 row">
-                <label for="nama" class="col-sm-2 col-form-label">Nama Lengkap</label>
-                <div class="col-sm-12">
-                    <input type="text" class="form-control" id="nama" name='nama' value="{{ $users->nama }}"
-                        placeholder="Masukkan Nama Lengkap" required>
-                </div>
+            <div class="col-md-6 mb-3">
+                <label for="nama" class="col-md-6 col-form-label">Nama Lengkap</label>
+                <input type="text" class="form-control" id="nama" name='nama' value="{{ $users->nama }}"
+                    placeholder="Masukkan Nama Lengkap" required>
             </div>
 
-            <div class="mb-3 row">
-                <label for="email" class="col-sm-2 col-form-label">Email</label>
-                <div class="col-sm-12">
-                    <input type="email" class="form-control" id="email" name='email' value="{{ $users->email }}"
-                        placeholder="Masukkan Email" required>
-                </div>
+            <div class="col-md-6 mb-3">
+                <label for="email" class="col-md-6 col-form-label">Email</label>
+                <input type="email" class="form-control" id="email" name='email' value="{{ $users->email }}"
+                    placeholder="Masukkan Email" required>
             </div>
 
-            <div class="mb-3 row">
-                <label for="jeniskelamin" class="col-sm-2 col-form-label">Jenis Kelamin</label>
-                <div class="col-sm-12">
-                    <select class="form-select cursor-pointer" aria-label="Default select example" id="jeniskelamin"
-                        name="jeniskelamin" required>
-                        @if ($users->jenis_kelamin == 'Laki-Laki')
-                            <option value="" disabled>Pilih Jenis Kelamin</option>
-                            <option value="{{ $users->jenis_kelamin }}" selected>{{ $users->jenis_kelamin }}</option>
-                            <option value="Perempuan">Perempuan</option>
-                        @elseif ($users->jenis_kelamin == 'Perempuan')
-                            <option value="" disabled>Pilih Jenis Kelamin</option>
-                            <option value="{{ $users->jenis_kelamin }}" selected>{{ $users->jenis_kelamin }}</option>
-                            <option value="Laki-Laki">Laki-Laki</option>
-                        @else
-                            <option value="" selected disabled>Pilih Jenis Kelamin</option>
-                            <option value="Laki-Laki">Laki-Laki</option>
-                            <option value="Perempuan">Perempuan</option>
-                        @endif
-                    </select>
-                </div>
+            <div class="col-md-6 mb-3">
+                <label for="jeniskelamin" class="col-md-6 col-form-label">Jenis Kelamin</label>
+                <select class="form-select cursor-pointer" aria-label="Default select example" id="jeniskelamin"
+                    name="jeniskelamin" required>
+                    @if ($users->jenis_kelamin == 'Laki-Laki')
+                        <option value="" disabled>Pilih Jenis Kelamin</option>
+                        <option value="{{ $users->jenis_kelamin }}" selected>{{ $users->jenis_kelamin }}</option>
+                        <option value="Perempuan">Perempuan</option>
+                    @elseif ($users->jenis_kelamin == 'Perempuan')
+                        <option value="" disabled>Pilih Jenis Kelamin</option>
+                        <option value="{{ $users->jenis_kelamin }}" selected>{{ $users->jenis_kelamin }}</option>
+                        <option value="Laki-Laki">Laki-Laki</option>
+                    @else
+                        <option value="" selected disabled>Pilih Jenis Kelamin</option>
+                        <option value="Laki-Laki">Laki-Laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                    @endif
+                </select>
             </div>
 
-            <div class="mb-3 row">
-                <label for="alamat" class="col-sm-2 col-form-label">Alamat</label>
-                <div class="col-sm-12">
-                    <input type="text" class="form-control" name='alamat' value="{{ $users->alamat }}"
-                        placeholder="Masukkan Alamat" required>
-                </div>
+            <div class="col-md-6 mb-3">
+                <label for="alamat" class="col-md-6 col-form-label">Alamat</label>
+                <input type="text" class="form-control" name='alamat' value="{{ $users->alamat }}"
+                    placeholder="Masukkan Alamat" required>
             </div>
 
-            <div class="mb-3 row">
-                <label for="noTelp" class="col-sm-2 col-form-label">No Handphone</label>
-                <div class="col-sm-12">
-                    <input type="text" class="form-control" id="noTelp" name='noTelp' value="{{ $users->no_telp }}"
-                        placeholder="Masukkan No Handphone" required>
-                </div>
+            <div class="col-md-6 mb-3">
+                <label for="noTelp" class="col-md-6 col-form-label">No Handphone</label>
+                <input type="text" class="form-control" id="noTelp" name='noTelp' value="{{ $users->no_telp }}"
+                    placeholder="Masukkan No Handphone" required>
             </div>
 
-            <div class="mb-3 row">
-                <label for="new_password" class="col-sm-2 col-form-label">Ganti Password <span
+            <div class="col-md-6 mb-3">
+                <label for="new_password" class="col-md-6 col-form-label">Ganti Password <span
                         class="text-danger text-sm">(Optional)</span></label>
-                <div class="col-sm-12">
-                    <input type="password" class="form-control" id="new_password" name='new_password'
-                        placeholder="Masukkan Password Baru">
-                </div>
+                <input type="password" class="form-control" id="new_password" name='new_password'
+                    placeholder="Masukkan Password Baru">
             </div>
 
+            <div class="col-md-6 mb-3">
+                <label for="role" class="col-md-6 col-form-label">Role Pengguna</label>
+                <select class="form-select cursor-pointer" aria-label="Default select example" id="role" name="role"
+                    required>
+                    @if ($users->id_role == 2)
+                        <option value="" disabled>Pilih Role Pengguna</option>
+                        <option value="{{ $users->id_role }}" selected>{{ $users->role->nama_role }}</option>
+                        <option value="3">Pegawai Koperasi</option>
+                    @elseif ($users->id_role == 3)
+                        <option value="" disabled>Pilih Jenis Kelamin</option>
+                        <option value="{{ $users->id_role }}" selected>{{ $users->role->nama_role }}</option>
+                        <option value="2">Kepala Koperasi</option>
+                    @endif
+                </select>
+            </div>
 
-            <div class="mb-3 row mt-5">
+            <div class="mb-3 mt-4">
                 <div class="col-sm-12 d-flex justify-content-between">
                     @if (Auth::user()->id_role == 1)
                         <a href="{{ route('admin.pegawai') }}" class="btn btn-secondary">Kembali</a>

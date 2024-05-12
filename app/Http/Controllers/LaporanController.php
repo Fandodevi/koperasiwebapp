@@ -164,7 +164,7 @@ class LaporanController extends Controller
             $dompdf->setPaper('A4', 'portrait');
             $dompdf->render();
 
-            $dompdf->stream('Laporan Laba/Rugi.pdf');
+            $dompdf->stream('Laporan_Laba_Rugi.pdf');
         } else {
             return back()->withErrors(['error' => 'Data Laporan SHU masih kosong. Silahkan coba kembali.']);
         }

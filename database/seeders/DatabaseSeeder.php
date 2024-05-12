@@ -37,14 +37,5 @@ class DatabaseSeeder extends Seeder
             'password'          => Hash::make('admin.com'),
             'id_role'           => 1,
         ]);
-        
-        User::factory()->create([
-            'nama'              => 'Kepala Koperasi',
-            'email'             => 'kepala@kepala.com',
-            'password'          => Hash::make('kepala.com'),
-            'id_role'           => 2,
-        ]);
-        
-        User::factory()->count(500)->create();
     }
 }

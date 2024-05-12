@@ -33,7 +33,6 @@ class UserFactory extends Factory
             'nik' => $nik,
             'email' => $faker->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
             'id_role' => 3,
         ];
     }

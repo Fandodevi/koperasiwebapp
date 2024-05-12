@@ -22,7 +22,7 @@ class PegawaiController extends Controller
      */
     public function index(Request $request)
     {
-        $users = User::where('id_role', '=', '3')->with('role');
+        $users = User::where('id_role', '!=', '1')->with('role');
 
         if ($request->ajax()) {
             return DataTables::of($users)
@@ -56,6 +56,7 @@ class PegawaiController extends Controller
             'alamat' => 'required',
             'noTelp' => 'required|numeric',
             'password' => 'required|min:8',
+            'role' => 'required|in:2,3',
         ]);
 
         if ($validator->fails()) {
@@ -72,6 +73,7 @@ class PegawaiController extends Controller
         $pegawai->jenis_kelamin = $request->jeniskelamin;
         $pegawai->alamat = $request->alamat;
         $pegawai->no_telp = $request->noTelp;
+        $pegawai->id_role = $request->role;
 
         if ($pegawai->save()) {
             if (Auth::user()->id_role == 1) {
@@ -122,6 +124,7 @@ class PegawaiController extends Controller
                 'jeniskelamin' => 'required|in:Laki-Laki,Perempuan',
                 'alamat' => 'required',
                 'noTelp' => 'required|numeric',
+                'role' => 'required|in:2,3',
             ]);
 
 
@@ -137,6 +140,7 @@ class PegawaiController extends Controller
             $pegawai->jenis_kelamin = $request->jeniskelamin;
             $pegawai->alamat = $request->alamat;
             $pegawai->no_telp = $request->noTelp;
+            $pegawai->id_role = $request->role;
         } else {
             $validator = Validator::make($request->all(), [
                 'nik' => 'required|digits:16',
@@ -146,6 +150,7 @@ class PegawaiController extends Controller
                 'alamat' => 'required',
                 'noTelp' => 'required|numeric',
                 'new_password' => 'required|min:8',
+                'role' => 'required|in:2,3',
             ]);
 
 
@@ -161,6 +166,7 @@ class PegawaiController extends Controller
             $pegawai->jenis_kelamin = $request->jeniskelamin;
             $pegawai->alamat = $request->alamat;
             $pegawai->no_telp = $request->noTelp;
+            $pegawai->id_role = $request->role;
             $pegawai->password = Hash::make($request->new_password);
         }
 
