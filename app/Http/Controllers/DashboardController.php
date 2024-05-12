@@ -13,15 +13,17 @@ use App\Models\HistoryTransaksi;
 use App\Models\Pinjaman;
 use App\Models\Simpanan;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\DataTables;
 
 class DashboardController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(SHUChart $lineChart, TransaksiChart $pieChart, AnggotaChart $lineChartAnggota, JenisAnggotaChart $pieChartJenisAnggota)
+    public function index(SHUChart $lineChart, TransaksiChart $pieChart, AnggotaChart $lineChartAnggota, JenisAnggotaChart $pieChartJenisAnggota, Request $request)
     {
         if (Auth::user()->id_role == 1) {
             $jumlahAnggota = Anggota::count();
@@ -80,6 +82,61 @@ class DashboardController extends Controller
             }
 
             $pendapatan = abs($totalPemasukan - $totalPengeluaran);
+
+            $cek_detail_pinjaman = DetailPinjaman::where('status_pelunasan', 'Belum Lunas')->with(['pinjaman', 'users'])->get();
+            foreach ($cek_detail_pinjaman as $row) {
+                if ($row->status_pelunasan == 'Belum Lunas') {
+                    if ($row->tanggal_jatuh_tempo < Carbon::now()) {
+                        $row->status_pelunasan = 'Lewat Jatuh Tempo';
+                        $row->save();
+                    }
+                }
+
+                if ($row->status_pelunasan == 'Lewat Jatuh Tempo') {
+                    if ($row->tanggal_jatuh_tempo > Carbon::now()) {
+                        $row->status_pelunasan = 'Belum Lunas';
+                        $row->save();
+                    }
+                }
+            }
+
+            $detail_pinjaman = DetailPinjaman::where('status_pelunasan', 'Lewat Jatuh Tempo')->with(['pinjaman', 'users'])->get();
+            $rowData = [];
+
+            if ($request->ajax()) {
+                foreach ($detail_pinjaman as $row) {
+                    if ($row->status_pelunasan == 'Belum Lunas') {
+                        if ($row->tanggal_jatuh_tempo < Carbon::now()) {
+                            $row->status_pelunasan = 'Lewat Jatuh Tempo';
+                            $row->save();
+                        }
+                    }
+
+                    if ($row->status_pelunasan == 'Lewat Jatuh Tempo') {
+                        if ($row->tanggal_jatuh_tempo > Carbon::now()) {
+                            $row->status_pelunasan = 'Belum Lunas';
+                            $row->save();
+                        }
+                    }
+
+                    $pinjaman = $row->pinjaman;
+                    $pinjaman = Pinjaman::where('id_pinjaman', $pinjaman->id_pinjaman)->with('anggota')->first();
+
+                    $rowData[] = [
+                        'DT_RowIndex' => $row->id_pinjaman,
+                        'id_pinjaman' => $pinjaman->id_pinjaman,
+                        'nama_anggota' => $pinjaman->anggota->nama,
+                        'tanggal_jatuh_tempo' => $row->tanggal_jatuh_tempo,
+                        'angsuran_ke_' => $row->angsuran_ke_,
+                        'angsuran_pokok' => $row->angsuran_pokok,
+                        'bunga' => $row->bunga,
+                        'subtotal_angsuran' => $row->subtotal_angsuran,
+                        'status_pelunasan' => $row->status_pelunasan
+                    ];
+                }
+
+                return DataTables::of($rowData)->toJson();
+            }
 
             return view('pages.dashboard.index', compact('jumlahAnggota', 'jumlahPegawai', 'jumlahSimpanan', 'jumlahPinjaman', 'saldoSimpananPokok', 'saldoSimpananWajib', 'saldoSimpananSukarela', 'pendapatan', 'shuChart', 'transaksiChart'));
         } else {

@@ -8,6 +8,7 @@
         <div class="layout-wrapper layout-content-navbar">
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
+
                     <div class="row">
                         <div class="col-md-6 col-lg-4 col-xl-3 order-0 mb-4">
                             <div class="card border border-0">
@@ -176,6 +177,33 @@
                             </div>
                         @endif
                     </div>
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12 col-xl-12 order-0 mb-4 my-4">
+                            <div class="card border border-0 p-4">
+                                <div
+                                    class="card-header bg-white border border-0 d-flex align-items-center justify-content-start pb-0 m-0">
+                                    <h5 class="text-start">Pinjaman Jatuh Tempo</h5>
+                                </div>
+                                <div class="table-responsive p-0">
+                                    <table class="table table-hover table-bordered align-items-center" id="myTable">
+                                        <thead style="font-size: 10pt">
+                                            <tr style="background-color: rgb(187, 246, 201)">
+                                                <th class="text-center w-8">Angsuran Ke-</th>
+                                                <th class="text-center">Nama Anggota</th>
+                                                <th class="text-center">Tanggal Jatuh Tempo</th>
+                                                <th class="text-center">Angsuran Pokok</th>
+                                                <th class="text-center">Bunga 1%</th>
+                                                <th class="text-center">Status</th>
+                                                <th class="text-center">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center" style="font-size: 10pt">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -188,6 +216,85 @@
         {{ $anggotaChart->script() }}
         {{ $jenisAnggotaChart->script() }}
     @else
+        <script>
+            $(document).ready(function() {
+                $('#myTable').DataTable({
+                    processing: true,
+                    ordering: true,
+                    responsive: true,
+                    serverSide: true,
+                    ajax: "{{ route('dashboard') }}",
+                    columns: [{
+                            data: 'angsuran_ke_',
+                            name: 'angsuran_ke_'
+                        },
+                        {
+                            data: 'nama_anggota',
+                            name: 'nama_anggota'
+                        },
+                        {
+                            data: 'tanggal_jatuh_tempo',
+                            name: 'tanggal_jatuh_tempo'
+                        },
+                        {
+                            data: 'angsuran_pokok',
+                            name: 'angsuran_pokok',
+                            render: function(data) {
+                                return data !== null ? parseInt(data).toLocaleString('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR'
+                                }) : '-';
+                            }
+                        },
+                        {
+                            data: 'bunga',
+                            name: 'bunga',
+                            render: function(data) {
+                                return data !== null ? parseInt(data).toLocaleString('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR'
+                                }) : '-';
+                            }
+                        },
+                        {
+                            data: 'status_pelunasan',
+                            name: 'status_pelunasan'
+                        },
+                        {
+                            data: null,
+                            render: function(data) {
+                                return '<div class="row justify-content-center">' +
+                                    '<div class="col-auto">' +
+                                    '<a href="{{ route('pinjaman.show', '') }}/' + data.id_pinjaman +
+                                    '" style="font-size: 10pt" class="btn btn-secondary m-1 edit-btn" ' +
+                                    'data-id="' + data.id +
+                                    '">Lihat</a>' +
+                                    '</div>' +
+                                    '</div>';
+                            }
+                        },
+                    ],
+                    rowCallback: function(row, data, index) {
+                        var dt = this.api();
+                        $(row).attr('data-id', data.id);
+                        $('td:eq(0)', row).html(dt.page.info().start + index + 1);
+                    }
+                });
+
+                $('.datatable-input').on('input', function() {
+                    var searchText = $(this).val().toLowerCase();
+
+                    $('.table tr').each(function() {
+                        var rowData = $(this).text().toLowerCase();
+                        if (rowData.indexOf(searchText) === -1) {
+                            $(this).hide();
+                        } else {
+                            $(this).show();
+                        }
+                    });
+                });
+            });
+        </script>
         <script src="{{ $shuChart->cdn() }}"></script>
         <script src="{{ $transaksiChart->cdn() }}"></script>
 
