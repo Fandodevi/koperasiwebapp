@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\ExportPegawai;
 use App\Models\Anggota;
 use App\Models\User;
+use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
@@ -208,7 +209,8 @@ class PegawaiController extends Controller
         $data = User::where('id_role', '=', 3)->count();
         if ($data != 0) {
             $users = User::where('id_role', 3)->get();
-            $html = view('pages.report.pegawai', compact('users'))->render();
+            $tahun = Carbon::now()->format('Y');
+            $html = view('pages.report.pegawai', compact('users', 'tahun'))->render();
 
             $options = new Options();
             $options->set('isHtml5ParserEnabled', true);

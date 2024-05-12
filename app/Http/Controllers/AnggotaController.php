@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\ExportAnggota;
 use App\Models\anggota;
 use App\Models\User;
+use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
@@ -171,7 +172,8 @@ class AnggotaController extends Controller
         $data = anggota::count();
         if ($data != 0) {
             $anggota = anggota::all();
-            $html = view('pages.report.anggota', compact('anggota'))->render();
+            $tahun = Carbon::now()->format('Y');
+            $html = view('pages.report.anggota', compact('anggota', 'tahun'))->render();
 
             $options = new Options();
             $options->set('isHtml5ParserEnabled', true);
