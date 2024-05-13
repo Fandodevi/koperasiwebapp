@@ -118,7 +118,7 @@
                                     data.id_anggota + '" required>' +
                                     '<div class="mb-3 row">' +
                                     '<label for="angsuran' + data.id_anggota +
-                                    '" class="col-sm-2 col-form-label">Angusan Pinjaman</label>' +
+                                    '" class="col-sm-2 col-form-label">Angsuran Pinjaman</label>' +
                                     '<div class="col-sm-12">' +
                                     '<input type="number" class="form-control" id="angsuran' + data
                                     .id_anggota +

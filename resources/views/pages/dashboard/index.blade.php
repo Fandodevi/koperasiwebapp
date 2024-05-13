@@ -87,7 +87,7 @@
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <div class="d-flex flex-column align-items-start gap-1">
-                                                <h2 class="mb-2">Rp {{ number_format($saldoSimpananPokok, 2, ',', '.') }}
+                                                <h2 class="mb-2">Rp {{ number_format($totalSimpananPokok, 2, ',', '.') }}
                                                 </h2>
                                                 <span>Total Saldo Simpanan Pokok</span>
                                             </div>
@@ -105,7 +105,7 @@
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <div class="d-flex flex-column align-items-start gap-1">
-                                                <h2 class="mb-2">Rp {{ number_format($saldoSimpananWajib, 2, ',', '.') }}
+                                                <h2 class="mb-2">Rp {{ number_format($totalSimpananWajib, 2, ',', '.') }}
                                                 </h2>
                                                 <span>Total Saldo Simpanan Wajib</span>
                                             </div>
@@ -124,7 +124,7 @@
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <div class="d-flex flex-column align-items-start gap-1">
                                                 <h2 class="mb-2">Rp
-                                                    {{ number_format($saldoSimpananSukarela, 2, ',', '.') }}
+                                                    {{ number_format($totalSimpananSukarela, 2, ',', '.') }}
                                                 </h2>
                                                 <span>Total Saldo Simpanan Sukarela</span>
                                             </div>

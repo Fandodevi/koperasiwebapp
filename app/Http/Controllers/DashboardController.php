@@ -39,9 +39,23 @@ class DashboardController extends Controller
             $jumlahPegawai = User::where('id_role', '=', '3')->count();
             $jumlahSimpanan = Simpanan::count();
             $jumlahPinjaman = Pinjaman::count();
-            $saldoSimpananPokok = DetailSimpanan::where('jenis_transaksi', 'Setor')->sum('simpanan_pokok');
-            $saldoSimpananWajib = DetailSimpanan::where('jenis_transaksi', 'Setor')->sum('simpanan_wajib');
-            $saldoSimpananSukarela = DetailSimpanan::where('jenis_transaksi', 'Setor')->sum('simpanan_sukarela');
+
+            $setor = DetailSimpanan::where('jenis_transaksi', '=', 'Setor')
+                ->get();
+            $tarik = DetailSimpanan::where('jenis_transaksi', '=', 'Tarik')
+                ->get();
+
+            $totalSimpananPokok = $setor->sum('simpanan_pokok');
+            $totalSimpananWajib = $setor->sum('simpanan_wajib');
+            $totalSimpananSukarela = $setor->sum('simpanan_sukarela');
+
+            $totalPenarikanPokok = $tarik->sum('simpanan_pokok');
+            $totalPenarikanWajib = $tarik->sum('simpanan_wajib');
+            $totalPenarikanSukarela = $tarik->sum('simpanan_sukarela');
+
+            $totalSimpananPokok -= $totalPenarikanPokok;
+            $totalSimpananWajib -= $totalPenarikanWajib;
+            $totalSimpananSukarela -= $totalPenarikanSukarela;
 
             $rekap = HistoryTransaksi::with('users', 'anggota', 'detail_simpanan', 'pinjaman', 'detail_pinjaman')->orderBy('created_at', 'desc')->get();
 
@@ -138,14 +152,7 @@ class DashboardController extends Controller
                 return DataTables::of($rowData)->toJson();
             }
 
-            return view('pages.dashboard.index', compact('jumlahAnggota', 'jumlahPegawai', 'jumlahSimpanan', 'jumlahPinjaman', 'saldoSimpananPokok', 'saldoSimpananWajib', 'saldoSimpananSukarela', 'pendapatan', 'shuChart', 'transaksiChart'));
-
-            $jumlahAnggota = Anggota::count();
-            $jumlahPegawai = User::where('id_role', '=', '3')->count();
-            $jumlahSimpanan = Simpanan::count();
-            $jumlahPinjaman = Pinjaman::count();
-
-            return view('pages.dashboard.index', compact('jumlahAnggota', 'jumlahPegawai', 'jumlahSimpanan', 'jumlahPinjaman'));
+            return view('pages.dashboard.index', compact('jumlahAnggota', 'jumlahPegawai', 'jumlahSimpanan', 'jumlahPinjaman', 'totalSimpananPokok', 'totalSimpananWajib', 'totalSimpananSukarela', 'pendapatan', 'shuChart', 'transaksiChart'));
         }
     }
 
