@@ -68,13 +68,24 @@
             </div>
             <div class="d-flex justify-content-between">
                 <div class="pb-2 mt-4">
-                    <a href='{{ route('pinjaman') }}' class="btn btn-secondary">Kembali</a>
+                    @if (Auth::user()->id_role == 2)
+                        <a href='{{ route('pinjaman') }}' class="btn btn-secondary">Kembali</a>
+                    @else
+                        <a href='{{ route('pegawai.pinjaman') }}' class="btn btn-secondary">Kembali</a>
+                    @endif
                 </div>
                 <div class="pb-2 mt-4">
                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#basicModal">Bayar
                         Pinjaman</button>
-                    <a href="{{ route('pinjaman.export', ['id' => $angsuran->id_pinjaman]) }}" class="btn btn-info">Cetak
-                        Laporan</a>
+                    @if (Auth::user()->id_role == 2)
+                        <a href="{{ route('pinjaman.export', ['id' => $angsuran->id_pinjaman]) }}"
+                            class="btn btn-info">Cetak
+                            Laporan</a>
+                    @else
+                        <a href="{{ route('pegawai.pinjaman.export', ['id' => $angsuran->id_pinjaman]) }}"
+                            class="btn btn-info">Cetak
+                            Laporan</a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -82,30 +93,35 @@
         <div class="modal fade" id="basicModal" tabindex="-1">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                    <form action="{{ route('pinjaman.update', $pinjaman->id_pinjaman) }}" method="POST"
-                        enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-                        <div class="modal-header">
-                            <h5 class="modal-title">Bayar Pinjaman</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body text-start">
-                            <input type="hidden" class="form-control" id="id_anggota" name="id_anggota"
-                                value="{{ $pinjaman->anggota->id_anggota }}" required>
-                            <div class="mb-3 row">
-                                <label for="angsuran" class="col-sm-4 col-form-label">Angusan Pinjaman</label>
-                                <div class="col-sm-12">
-                                    <input type="number" class="form-control" id="angsuran" name="angsuran"
-                                        placeholder="Masukkan Angsuran" max="{{ $pinjaman->angsuran }}" min="1"
-                                        required>
-                                </div>
+                    @if (Auth::user()->id_role == 2)
+                        <form action="{{ route('pinjaman.update', $pinjaman->id_pinjaman) }}" method="POST"
+                            enctype="multipart/form-data">
+                        @else
+                            <form action="{{ route('pegawai.pinjaman.update', $pinjaman->id_pinjaman) }}" method="POST"
+                                enctype="multipart/form-data">
+                    @endif
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-header">
+                        <h5 class="modal-title">Bayar Pinjaman</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-start">
+                        <input type="hidden" class="form-control" id="id_anggota" name="id_anggota"
+                            value="{{ $pinjaman->anggota->id_anggota }}" required>
+                        <div class="mb-3 row">
+                            <label for="angsuran" class="col-sm-4 col-form-label">Angusan Pinjaman</label>
+                            <div class="col-sm-12">
+                                <input type="number" class="form-control" id="angsuran" name="angsuran"
+                                    placeholder="Masukkan Angsuran" max="{{ $pinjaman->angsuran }}" min="1"
+                                    required>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Bayar</button>
-                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Bayar</button>
+                    </div>
                     </form>
                 </div>
             </div>
@@ -131,71 +147,142 @@
         </script>
     @endif
 
-    <script>
-        $(document).ready(function() {
-            $('#myTable').DataTable({
-                processing: true,
-                ordering: true,
-                responsive: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route('pinjaman.show', ['id' => ':id']) }}'.replace(':id', window.location
-                        .href.split('/').pop()),
-                    method: 'GET',
-                    dataSrc: 'data'
-                },
-                columns: [{
-                        data: 'angsuran_ke_',
-                        name: 'angsuran_ke_'
+    @if (Auth::user()->id_role == 2)
+        <script>
+            $(document).ready(function() {
+                $('#myTable').DataTable({
+                    processing: true,
+                    ordering: true,
+                    responsive: true,
+                    serverSide: true,
+                    ajax: {
+                        url: '{{ route('pinjaman.show', ['id' => ':id']) }}'.replace(':id', window.location
+                            .href.split('/').pop()),
+                        method: 'GET',
+                        dataSrc: 'data'
                     },
-                    {
-                        data: 'tanggal_jatuh_tempo',
-                        name: 'tanggal_jatuh_tempo'
-                    },
-                    {
-                        data: 'angsuran_pokok',
-                        name: 'angsuran_pokok',
-                        render: function(data) {
-                            return data !== null ? parseInt(data).toLocaleString('id-ID', {
-                                style: 'currency',
-                                currency: 'IDR'
-                            }) : '-';
-                        }
-                    },
-                    {
-                        data: 'bunga',
-                        name: 'bunga',
-                        render: function(data) {
-                            return data !== null ? parseInt(data).toLocaleString('id-ID', {
-                                style: 'currency',
-                                currency: 'IDR'
-                            }) : '-';
-                        }
-                    },
-                    {
-                        data: 'status_pelunasan',
-                        name: 'status_pelunasan'
-                    },
-                ],
-                rowCallback: function(row, data, index) {
-                    var dt = this.api();
-                    $(row).attr('data-id', data.id);
-                    $('td:eq(0)', row).html(dt.page.info().start + index + 1);
-                }
-            });
-
-            $('.datatable-input').on('input', function() {
-                var searchText = $(this).val().toLowerCase();
-
-                $('.table tr').each(function() {
-                    var rowData = $(this).text().toLowerCase();
-                    if (rowData.indexOf(searchText) === -1) {
-                        $(this).hide();
-                    } else {
-                        $(this).show();
+                    columns: [{
+                            data: 'angsuran_ke_',
+                            name: 'angsuran_ke_'
+                        },
+                        {
+                            data: 'tanggal_jatuh_tempo',
+                            name: 'tanggal_jatuh_tempo'
+                        },
+                        {
+                            data: 'angsuran_pokok',
+                            name: 'angsuran_pokok',
+                            render: function(data) {
+                                return data !== null ? parseInt(data).toLocaleString('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR'
+                                }) : '-';
+                            }
+                        },
+                        {
+                            data: 'bunga',
+                            name: 'bunga',
+                            render: function(data) {
+                                return data !== null ? parseInt(data).toLocaleString('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR'
+                                }) : '-';
+                            }
+                        },
+                        {
+                            data: 'status_pelunasan',
+                            name: 'status_pelunasan'
+                        },
+                    ],
+                    rowCallback: function(row, data, index) {
+                        var dt = this.api();
+                        $(row).attr('data-id', data.id);
+                        $('td:eq(0)', row).html(dt.page.info().start + index + 1);
                     }
                 });
+
+                $('.datatable-input').on('input', function() {
+                    var searchText = $(this).val().toLowerCase();
+
+                    $('.table tr').each(function() {
+                        var rowData = $(this).text().toLowerCase();
+                        if (rowData.indexOf(searchText) === -1) {
+                            $(this).hide();
+                        } else {
+                            $(this).show();
+                        }
+                    });
+                });
             });
-        });
-    </script>
+        </script>
+    @else
+        <script>
+            $(document).ready(function() {
+                $('#myTable').DataTable({
+                    processing: true,
+                    ordering: true,
+                    responsive: true,
+                    serverSide: true,
+                    ajax: {
+                        url: '{{ route('pegawai.pinjaman.show', ['id' => ':id']) }}'.replace(':id', window
+                            .location
+                            .href.split('/').pop()),
+                        method: 'GET',
+                        dataSrc: 'data'
+                    },
+                    columns: [{
+                            data: 'angsuran_ke_',
+                            name: 'angsuran_ke_'
+                        },
+                        {
+                            data: 'tanggal_jatuh_tempo',
+                            name: 'tanggal_jatuh_tempo'
+                        },
+                        {
+                            data: 'angsuran_pokok',
+                            name: 'angsuran_pokok',
+                            render: function(data) {
+                                return data !== null ? parseInt(data).toLocaleString('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR'
+                                }) : '-';
+                            }
+                        },
+                        {
+                            data: 'bunga',
+                            name: 'bunga',
+                            render: function(data) {
+                                return data !== null ? parseInt(data).toLocaleString('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR'
+                                }) : '-';
+                            }
+                        },
+                        {
+                            data: 'status_pelunasan',
+                            name: 'status_pelunasan'
+                        },
+                    ],
+                    rowCallback: function(row, data, index) {
+                        var dt = this.api();
+                        $(row).attr('data-id', data.id);
+                        $('td:eq(0)', row).html(dt.page.info().start + index + 1);
+                    }
+                });
+
+                $('.datatable-input').on('input', function() {
+                    var searchText = $(this).val().toLowerCase();
+
+                    $('.table tr').each(function() {
+                        var rowData = $(this).text().toLowerCase();
+                        if (rowData.indexOf(searchText) === -1) {
+                            $(this).hide();
+                        } else {
+                            $(this).show();
+                        }
+                    });
+                });
+            });
+        </script>
+    @endif
 @endsection

@@ -106,7 +106,7 @@ class LaporanController extends Controller
             return back()->withErrors(['error' => 'Data laporan tidak ditemukan']);
         }
 
-        if ($request->keterangan == 'Pendapatan Bunga') {
+        if ($laporan->keterangan == 'Pendapatan Bunga') {
             return back()->withErrors(['error' => 'Data laporan pendapatan bunga tidak dapat di edit']);
         } else {
             $laporan->keterangan = $request->keterangan;

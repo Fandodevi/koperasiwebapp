@@ -113,22 +113,22 @@ Route::middleware(['auth'])->group(function () {
         Route::post('pegawai/add', [PegawaiController::class, 'store'])->name('pegawai.pegawai.store');
         Route::get('pegawai/edit/{id}', [PegawaiController::class, 'edit'])->name('pegawai.pegawai.edit');
         Route::put('pegawai/edit/{id}', [PegawaiController::class, 'update'])->name('pegawai.pegawai.update');
-        Route::get('pegawai/{id}', [PegawaiController::class, 'destroy'])->name('pegawai.pegawai.destroy');
+        Route::get('pegawai/export/pdf', [PegawaiController::class, 'export'])->name('pegawai.pegawai.export');
 
         Route::get('anggota', [AnggotaController::class, 'index'])->name('pegawai.anggota');
         Route::get('anggota/add', [AnggotaController::class, 'create'])->name('pegawai.anggota.create');
         Route::post('anggota/add', [AnggotaController::class, 'store'])->name('pegawai.anggota.store');
         Route::get('anggota/edit/{id}', [AnggotaController::class, 'edit'])->name('pegawai.anggota.edit');
         Route::put('anggota/edit/{id}', [AnggotaController::class, 'update'])->name('pegawai.anggota.update');
-        Route::get('anggota/{id}', [AnggotaController::class, 'destroy'])->name('pegawai.anggota.destroy');
+        Route::get('anggota/export/pdf', [AnggotaController::class, 'export'])->name('pegawai.anggota.export');
 
         Route::get('simpanan', [SimpananController::class, 'index'])->name('pegawai.simpanan');
         Route::get('simpanan/add', [SimpananController::class, 'create'])->name('pegawai.simpanan.create');
-        Route::post('simpanan/add', [SimpananController::class, 'store'])->name('spegawai.impanan.store');
+        Route::post('simpanan/add', [SimpananController::class, 'store'])->name('pegawai.simpanan.store');
         Route::get('simpanan/view/{id}', [SimpananController::class, 'show'])->name('pegawai.simpanan.show');
         Route::get('simpanan/edit/{id}', [SimpananController::class, 'edit'])->name('pegawai.simpanan.edit');
         Route::put('simpanan/edit/{id}', [SimpananController::class, 'update'])->name('pegawai.simpanan.update');
-        Route::get('simpanan/{id}', [SimpananController::class, 'destroy'])->name('pegawai.simpanan.destroy');
+        Route::get('simpanan/export/pdf/{id}', [SimpananController::class, 'export'])->name('pegawai.simpanan.export');
 
         Route::get('pinjaman', [PinjamanController::class, 'index'])->name('pegawai.pinjaman');
         Route::get('pinjaman/add', [PinjamanController::class, 'create'])->name('pegawai.pinjaman.create');
@@ -136,9 +136,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('pinjaman/view/{id}', [PinjamanController::class, 'show'])->name('pegawai.pinjaman.show');
         Route::get('pinjaman/edit/{id}', [PinjamanController::class, 'edit'])->name('pegawai.pinjaman.edit');
         Route::put('pinjaman/edit/{id}', [PinjamanController::class, 'update'])->name('pegawai.pinjaman.update');
-        Route::get('pinjaman/{id}', [PinjamanController::class, 'destroy'])->name('pegawai.pinjaman.destroy');
+        Route::get('pinjaman/export/pdf/{id}', [PinjamanController::class, 'export'])->name('pegawai.pinjaman.export');
 
         Route::get('laporan', [LaporanController::class, 'index'])->name('pegawai.laporan');
+        Route::post('laporan/add', [LaporanController::class, 'store'])->name('pegawai.laporan.store');
+        Route::put('laporan/update', [LaporanController::class, 'update'])->name('pegawai.laporan.update');
         Route::get('laporan/export/pdf', [LaporanController::class, 'export'])->name('pegawai.laporan.export');
 
         Route::get('rekap', [RekapTransaksiController::class, 'index'])->name('pegawai.rekap');

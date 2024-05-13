@@ -128,7 +128,11 @@ class SimpananController extends Controller
                 }
             });
 
-            return redirect()->route('simpanan')->with('success', 'Data simpanan berhasil ditambahkan.');
+            if (Auth::user()->id_role == 2) {
+                return redirect()->route('simpanan')->with('success', 'Data simpanan berhasil ditambahkan.');
+            } else {
+                return redirect()->route('pegawai.simpanan')->with('success', 'Data simpanan berhasil ditambahkan.');
+            }
         } catch (\Exception $e) {
             return back()->withErrors(['error' => $e->getMessage()]);
         }
@@ -352,7 +356,11 @@ class SimpananController extends Controller
                     return back()->with('error', 'Gagal menyimpan perubahan pada total saldo.');
                 }
 
-                return back()->with('success', 'Data detail simpanan berhasil diperbarui.');
+                if (Auth::user()->id_role == 2) {
+                    return back()->with('success', 'Data detail simpanan berhasil diperbarui.');
+                } else {
+                    return back()->with('success', 'Data detail simpanan berhasil diperbarui.');
+                }
             } else {
                 return back()->with('error', 'Baris tidak ditemukan.');
             }
@@ -445,7 +453,11 @@ class SimpananController extends Controller
                     }
                 });
 
-                return redirect()->route('simpanan')->with('success', 'Data simpanan berhasil disimpan.');
+                if (Auth::user()->id_role == 2) {
+                    return redirect()->route('simpanan')->with('success', 'Data simpanan berhasil disimpan.');
+                } else {
+                    return redirect()->route('pegawai.simpanan')->with('success', 'Data simpanan berhasil disimpan.');
+                }
             } catch (\Exception $e) {
                 return back()->withErrors(['error' => $e->getMessage()]);
             }

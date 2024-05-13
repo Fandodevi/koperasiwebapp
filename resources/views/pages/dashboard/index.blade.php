@@ -77,7 +77,7 @@
                                 </div>
                             </div>
                         </div>
-                        @if (Auth::user()->id_role == 2)
+                        @if (Auth::user()->id_role != 1)
                             <div class="col-md-6 col-lg-4 col-xl-3 order-0 mb-4">
                                 <div class="card border border-0">
                                     <div
@@ -216,85 +216,167 @@
         {{ $anggotaChart->script() }}
         {{ $jenisAnggotaChart->script() }}
     @else
-        <script>
-            $(document).ready(function() {
-                $('#myTable').DataTable({
-                    processing: true,
-                    ordering: true,
-                    responsive: true,
-                    serverSide: true,
-                    ajax: "{{ route('dashboard') }}",
-                    columns: [{
-                            data: 'angsuran_ke_',
-                            name: 'angsuran_ke_'
-                        },
-                        {
-                            data: 'nama_anggota',
-                            name: 'nama_anggota'
-                        },
-                        {
-                            data: 'tanggal_jatuh_tempo',
-                            name: 'tanggal_jatuh_tempo'
-                        },
-                        {
-                            data: 'angsuran_pokok',
-                            name: 'angsuran_pokok',
-                            render: function(data) {
-                                return data !== null ? parseInt(data).toLocaleString('id-ID', {
-                                    style: 'currency',
-                                    currency: 'IDR'
-                                }) : '-';
-                            }
-                        },
-                        {
-                            data: 'bunga',
-                            name: 'bunga',
-                            render: function(data) {
-                                return data !== null ? parseInt(data).toLocaleString('id-ID', {
-                                    style: 'currency',
-                                    currency: 'IDR'
-                                }) : '-';
-                            }
-                        },
-                        {
-                            data: 'status_pelunasan',
-                            name: 'status_pelunasan'
-                        },
-                        {
-                            data: null,
-                            render: function(data) {
-                                return '<div class="row justify-content-center">' +
-                                    '<div class="col-auto">' +
-                                    '<a href="{{ route('pinjaman.show', '') }}/' + data.id_pinjaman +
-                                    '" style="font-size: 10pt" class="btn btn-secondary m-1 edit-btn" ' +
-                                    'data-id="' + data.id +
-                                    '">Lihat</a>' +
-                                    '</div>' +
-                                    '</div>';
-                            }
-                        },
-                    ],
-                    rowCallback: function(row, data, index) {
-                        var dt = this.api();
-                        $(row).attr('data-id', data.id);
-                        $('td:eq(0)', row).html(dt.page.info().start + index + 1);
-                    }
-                });
-
-                $('.datatable-input').on('input', function() {
-                    var searchText = $(this).val().toLowerCase();
-
-                    $('.table tr').each(function() {
-                        var rowData = $(this).text().toLowerCase();
-                        if (rowData.indexOf(searchText) === -1) {
-                            $(this).hide();
-                        } else {
-                            $(this).show();
+        @if (Auth::user()->id_role == 2)
+            <script>
+                $(document).ready(function() {
+                    $('#myTable').DataTable({
+                        processing: true,
+                        ordering: true,
+                        responsive: true,
+                        serverSide: true,
+                        ajax: "{{ route('dashboard') }}",
+                        columns: [{
+                                data: 'angsuran_ke_',
+                                name: 'angsuran_ke_'
+                            },
+                            {
+                                data: 'nama_anggota',
+                                name: 'nama_anggota'
+                            },
+                            {
+                                data: 'tanggal_jatuh_tempo',
+                                name: 'tanggal_jatuh_tempo'
+                            },
+                            {
+                                data: 'angsuran_pokok',
+                                name: 'angsuran_pokok',
+                                render: function(data) {
+                                    return data !== null ? parseInt(data).toLocaleString('id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR'
+                                    }) : '-';
+                                }
+                            },
+                            {
+                                data: 'bunga',
+                                name: 'bunga',
+                                render: function(data) {
+                                    return data !== null ? parseInt(data).toLocaleString('id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR'
+                                    }) : '-';
+                                }
+                            },
+                            {
+                                data: 'status_pelunasan',
+                                name: 'status_pelunasan'
+                            },
+                            {
+                                data: null,
+                                render: function(data) {
+                                    return '<div class="row justify-content-center">' +
+                                        '<div class="col-auto">' +
+                                        '<a href="{{ route('pinjaman.show', '') }}/' + data.id_pinjaman +
+                                        '" style="font-size: 10pt" class="btn btn-secondary m-1 edit-btn" ' +
+                                        'data-id="' + data.id +
+                                        '">Lihat</a>' +
+                                        '</div>' +
+                                        '</div>';
+                                }
+                            },
+                        ],
+                        rowCallback: function(row, data, index) {
+                            var dt = this.api();
+                            $(row).attr('data-id', data.id);
+                            $('td:eq(0)', row).html(dt.page.info().start + index + 1);
                         }
                     });
+
+                    $('.datatable-input').on('input', function() {
+                        var searchText = $(this).val().toLowerCase();
+
+                        $('.table tr').each(function() {
+                            var rowData = $(this).text().toLowerCase();
+                            if (rowData.indexOf(searchText) === -1) {
+                                $(this).hide();
+                            } else {
+                                $(this).show();
+                            }
+                        });
+                    });
                 });
-            });
-        </script>
+            </script>
+        @elseif (Auth::user()->id_role == 3)
+            <script>
+                $(document).ready(function() {
+                    $('#myTable').DataTable({
+                        processing: true,
+                        ordering: true,
+                        responsive: true,
+                        serverSide: true,
+                        ajax: "{{ route('pegawai.dashboard') }}",
+                        columns: [{
+                                data: 'angsuran_ke_',
+                                name: 'angsuran_ke_'
+                            },
+                            {
+                                data: 'nama_anggota',
+                                name: 'nama_anggota'
+                            },
+                            {
+                                data: 'tanggal_jatuh_tempo',
+                                name: 'tanggal_jatuh_tempo'
+                            },
+                            {
+                                data: 'angsuran_pokok',
+                                name: 'angsuran_pokok',
+                                render: function(data) {
+                                    return data !== null ? parseInt(data).toLocaleString('id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR'
+                                    }) : '-';
+                                }
+                            },
+                            {
+                                data: 'bunga',
+                                name: 'bunga',
+                                render: function(data) {
+                                    return data !== null ? parseInt(data).toLocaleString('id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR'
+                                    }) : '-';
+                                }
+                            },
+                            {
+                                data: 'status_pelunasan',
+                                name: 'status_pelunasan'
+                            },
+                            {
+                                data: null,
+                                render: function(data) {
+                                    return '<div class="row justify-content-center">' +
+                                        '<div class="col-auto">' +
+                                        '<a href="{{ route('pinjaman.show', '') }}/' + data.id_pinjaman +
+                                        '" style="font-size: 10pt" class="btn btn-secondary m-1 edit-btn" ' +
+                                        'data-id="' + data.id +
+                                        '">Lihat</a>' +
+                                        '</div>' +
+                                        '</div>';
+                                }
+                            },
+                        ],
+                        rowCallback: function(row, data, index) {
+                            var dt = this.api();
+                            $(row).attr('data-id', data.id);
+                            $('td:eq(0)', row).html(dt.page.info().start + index + 1);
+                        }
+                    });
+
+                    $('.datatable-input').on('input', function() {
+                        var searchText = $(this).val().toLowerCase();
+
+                        $('.table tr').each(function() {
+                            var rowData = $(this).text().toLowerCase();
+                            if (rowData.indexOf(searchText) === -1) {
+                                $(this).hide();
+                            } else {
+                                $(this).show();
+                            }
+                        });
+                    });
+                });
+            </script>
+        @endif
         <script src="{{ $shuChart->cdn() }}"></script>
         <script src="{{ $transaksiChart->cdn() }}"></script>
 

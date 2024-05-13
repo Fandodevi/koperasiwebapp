@@ -128,7 +128,11 @@ class PinjamanController extends Controller
                 }
             });
 
-            return redirect()->route('pinjaman')->with('success', 'Data pinjaman berhasil ditambahkan.');
+            if (Auth::user()->id_role == 2) {
+                return redirect()->route('pinjaman')->with('success', 'Data pinjaman berhasil ditambahkan.');
+            } else {
+                return redirect()->route('pegawai.pinjaman')->with('success', 'Data pinjaman berhasil ditambahkan.');
+            }
         } catch (\Exception $e) {
             return back()->withErrors(['error' => $e->getMessage()]);
         }

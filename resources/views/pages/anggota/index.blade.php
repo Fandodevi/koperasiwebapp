@@ -322,17 +322,18 @@
                                 data: null,
                                 render: function(data) {
                                     var simpananLink =
-                                        '<a href="{{ route('simpanan.create') }}" style="font-size: 10pt" class="btn btn-primary m-1 edit-btn" ' +
+                                        '<a href="{{ route('pegawai.simpanan.create') }}" style="font-size: 10pt" class="btn btn-primary m-1 edit-btn" ' +
                                         'data-id="' + data.id +
                                         '">Simpanan</a>';
 
                                     var pinjamanLink =
-                                        '<a href="{{ route('pinjaman.create') }}" style="font-size: 10pt" class="btn btn-info m-1 delete-btn" ' +
+                                        '<a href="{{ route('pegawai.pinjaman.create') }}" style="font-size: 10pt" class="btn btn-info m-1 delete-btn" ' +
                                         'data-id="' + data.id +
                                         '">Pinjaman</a>';
 
                                     if (data.has_simpanan) {
-                                        simpananLink = '<a href="{{ route('simpanan.show', '') }}/' +
+                                        simpananLink =
+                                            '<a href="{{ route('pegawai.simpanan.show', '') }}/' +
                                             data.id_anggota +
                                             '" style="font-size: 10pt" class="btn btn-primary m-1 edit-btn" ' +
                                             'data-id="' + data.id +
@@ -341,7 +342,8 @@
                                     }
 
                                     if (data.has_pinjaman) {
-                                        pinjamanLink = '<a href="{{ route('pinjaman.show', '') }}/' +
+                                        pinjamanLink =
+                                            '<a href="{{ route('pegawai.pinjaman.show', '') }}/' +
                                             data.id_anggota +
                                             '" style="font-size: 10pt" class="btn btn-info m-1 delete-btn" ' +
                                             'data-id="' + data.id +
@@ -360,16 +362,11 @@
                                 render: function(data) {
                                     return '<div class="row justify-content-center">' +
                                         '<div class="col-auto">' +
-                                        '<a href="{{ route('anggota.edit', '') }}/' + data.id_anggota +
+                                        '<a href="{{ route('pegawai.anggota.edit', '') }}/' + data
+                                        .id_anggota +
                                         '" style="font-size: 10pt" class="btn btn-warning m-1 edit-btn" ' +
                                         'data-id="' + data.id +
                                         '">Edit</a>' +
-                                        '</div>' +
-                                        '<div class="col-auto">' +
-                                        '<a href="{{ route('anggota.destroy', '') }}/' + data.id_anggota +
-                                        '" style="font-size: 10pt" class="btn btn-danger m-1 delete-btn" ' +
-                                        'data-id="' + data.id +
-                                        '">Hapus</a>' +
                                         '</div>' +
                                         '</div>';
                                 }

@@ -260,11 +260,6 @@
                                         '" style="font-size: 10pt" class="btn btn-info m-1 edit-btn" ' +
                                         'data-id="' + data.id +
                                         '">Edit</a>' +
-                                        '<a href="{{ route('pegawai.pegawai.destroy', '') }}/' + data
-                                        .id_users +
-                                        '" style="font-size: 10pt" class="btn btn-danger m-1 delete-btn" ' +
-                                        'data-id="' + data.id +
-                                        '">Hapus</a>' +
                                         '</div>' +
                                         '</div>';
                                 }

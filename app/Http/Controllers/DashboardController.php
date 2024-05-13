@@ -34,7 +34,7 @@ class DashboardController extends Controller
             $jenisAnggotaChart = $pieChartJenisAnggota->build();
 
             return view('pages.dashboard.index', compact('jumlahAnggota', 'jumlahPegawai', 'jumlahSimpanan', 'jumlahPinjaman', 'anggotaChart', 'jenisAnggotaChart'));
-        } elseif (Auth::user()->id_role == 2) {
+        } else {
             $jumlahAnggota = Anggota::count();
             $jumlahPegawai = User::where('id_role', '=', '3')->count();
             $jumlahSimpanan = Simpanan::count();
@@ -139,7 +139,7 @@ class DashboardController extends Controller
             }
 
             return view('pages.dashboard.index', compact('jumlahAnggota', 'jumlahPegawai', 'jumlahSimpanan', 'jumlahPinjaman', 'saldoSimpananPokok', 'saldoSimpananWajib', 'saldoSimpananSukarela', 'pendapatan', 'shuChart', 'transaksiChart'));
-        } else {
+
             $jumlahAnggota = Anggota::count();
             $jumlahPegawai = User::where('id_role', '=', '3')->count();
             $jumlahSimpanan = Simpanan::count();
