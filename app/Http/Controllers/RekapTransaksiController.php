@@ -170,14 +170,14 @@ class RekapTransaksiController extends Controller
 
             $rekapData = HistoryTransaksi::with('users', 'detail_simpanan', 'pinjaman', 'detail_pinjaman')->whereBetween('created_at', [$startDate, $endDate])->orderBy('created_at', 'desc')->get();
 
-            $jumlahMasuk = 0.00;
-            $jumlahKeluar = 0.00;
-            $totalPemasukan = 0.00;
-            $totalPengeluaran = 0.00;
             $jumlah_masuk = [];
             $jumlah_keluar = [];
+            $totalPemasukan = 0.00;
+            $totalPengeluaran = 0.00;
 
             foreach ($rekapData as $item) {
+                $jumlahMasuk = 0.00;
+                $jumlahKeluar = 0.00;
                 if ($item->id_detail_simpanan !== null) {
                     $detail_simpanan = DetailSimpanan::find($item->id_detail_simpanan);
                     $simpanan_pokok = $detail_simpanan->simpanan_pokok;
@@ -195,7 +195,7 @@ class RekapTransaksiController extends Controller
                 } elseif ($item->id_pinjaman !== null) {
                     $pinjaman = Pinjaman::find($item->id_pinjaman);
                     if (!$pinjaman) {
-                        $jumlah_keluar = 0.00;
+                        $jumlahKeluar = 0.00;
                     } else {
                         $jumlahKeluar = $pinjaman->total_pinjaman;
                     }
@@ -211,8 +211,9 @@ class RekapTransaksiController extends Controller
                     $totalPemasukan += $jumlahMasuk;
                     $jenis_transaksi = 'Angsuran Pinjaman';
                 }
-                $jumlah_masuk[] = $jumlahMasuk;
-                $jumlah_keluar[] = $jumlahKeluar;
+                
+                array_push($jumlah_masuk, $jumlahMasuk);
+                array_push($jumlah_keluar, $jumlahKeluar);
             }
 
             $pendapatan = abs($totalPemasukan - $totalPengeluaran);
