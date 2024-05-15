@@ -29,7 +29,7 @@
                 </div>
             @endif
             <div class="col-md-6 mb-3">
-                <label for="nik" class="col-md-6 col-form-label">NIK</label>
+                <label for="nik" class="col-md-6 col-form-label">NIKKKK</label>
                 <input type="text" class="form-control" id="nik" name='nik' value="{{ old('nik') }}"
                     placeholder="Masukkan NIK" required>
             </div>
